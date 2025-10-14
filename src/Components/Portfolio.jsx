@@ -9,7 +9,7 @@ const isMobile = () => {
 };
 
 // Image component with fallback - optimized
-const ImageWithFallback = ({ src, alt, className }) => {
+const ImageWithFallback = ({ src, alt, className, eager = false }) => {
   const [imgSrc, setImgSrc] = useState(src);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -31,7 +31,7 @@ const ImageWithFallback = ({ src, alt, className }) => {
         src={imgSrc}
         alt={alt}
         className={className}
-        loading="lazy"
+        loading={eager ? "eager" : "lazy"}
         onLoad={() => setLoading(false)}
         onError={() => {
           setError(true);
@@ -674,9 +674,19 @@ const Portfolio = () => {
                         inset 0 1px 0 rgba(255, 255, 255, 0.2)
                       `,
                       border: '4px solid rgba(255, 255, 255, 0.3)',
-                      zIndex: 5,
+                      zIndex: 15,
                     }}
                   />
+
+                  {/* Image - Base layer */}
+                  <div className="absolute inset-0 z-0">
+                    <ImageWithFallback
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover rounded-3xl"
+                      eager={true}
+                    />
+                  </div>
 
                   {/* Refined vignette overlay */}
                   <div 
@@ -698,12 +708,6 @@ const Portfolio = () => {
                     <div className="absolute bottom-3 right-3 w-8 h-1 bg-white/40 rounded" />
                     <div className="absolute bottom-3 right-3 w-1 h-8 bg-white/40 rounded" />
                   </div>
-
-                  <ImageWithFallback
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover rounded-3xl"
-                  />
 
                   {/* Enhanced floating particles - Reduced for mobile */}
                   {!mobile && [...Array(6)].map((_, i) => (
