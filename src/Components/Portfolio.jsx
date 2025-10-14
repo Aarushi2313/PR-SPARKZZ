@@ -1055,139 +1055,222 @@ const Portfolio = () => {
         </div>
       </motion.div>
 
-      {/* Modal */}
+      {/* Modal - Redesigned for perfect alignment */}
       <AnimatePresence>
         {activeCaseStudy && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
             style={{ 
-              backgroundColor: 'rgba(0, 0, 0, 0.9)',
-              backdropFilter: 'blur(10px)'
+              backgroundColor: 'rgba(0, 0, 0, 0.92)',
+              backdropFilter: 'blur(12px)'
             }}
             onClick={() => setActiveCaseStudy(null)}
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative max-w-6xl w-full max-h-[90vh] bg-[#d4c4c0] rounded-3xl overflow-hidden shadow-2xl"
+              className="relative w-full max-w-7xl bg-white rounded-3xl overflow-hidden shadow-2xl"
+              style={{
+                maxHeight: 'calc(100vh - 4rem)',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(134, 102, 165, 0.1)'
+              }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
               <motion.button
                 whileHover={{ scale: 1.1, rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
-                className="absolute top-6 right-6 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md shadow-lg"
+                whileTap={{ scale: 0.95 }}
+                className="absolute top-4 right-4 md:top-6 md:right-6 z-50 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white shadow-lg hover:shadow-xl transition-shadow"
                 onClick={() => setActiveCaseStudy(null)}
+                style={{
+                  border: '2px solid #8666A5'
+                }}
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8666A5" strokeWidth="2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8666A5" strokeWidth="2.5" strokeLinecap="round">
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </motion.button>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 h-full">
-                {/* Image Gallery */}
-                <div className="relative bg-[#3d4f51] flex items-center justify-center p-12">
+              <div className="grid grid-cols-1 lg:grid-cols-2 h-full" style={{ maxHeight: 'calc(100vh - 4rem)' }}>
+                {/* Image Gallery Section */}
+                <div className="relative bg-gradient-to-br from-[#3d4f51] to-[#2d3f41] flex items-center justify-center p-6 md:p-12 min-h-[300px] lg:min-h-full">
+                  {/* Decorative corner accents */}
+                  <div className="absolute top-0 left-0 w-20 h-20 pointer-events-none opacity-30">
+                    <div className="absolute top-4 left-4 w-12 h-0.5 bg-white/60" />
+                    <div className="absolute top-4 left-4 w-0.5 h-12 bg-white/60" />
+                  </div>
+                  <div className="absolute bottom-0 right-0 w-20 h-20 pointer-events-none opacity-30">
+                    <div className="absolute bottom-4 right-4 w-12 h-0.5 bg-white/60" />
+                    <div className="absolute bottom-4 right-4 w-0.5 h-12 bg-white/60" />
+                  </div>
+
                   <AnimatePresence mode="wait" custom={imageDirection}>
                     <motion.div
                       key={currentImageIndex}
                       custom={imageDirection}
-                      initial={{ opacity: 0, x: imageDirection * 100 }}
+                      initial={{ opacity: 0, x: imageDirection * 50 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -imageDirection * 100 }}
-                      transition={{ duration: 0.5 }}
+                      exit={{ opacity: 0, x: -imageDirection * 50 }}
+                      transition={{ duration: 0.4, ease: "easeInOut" }}
                       className="w-full h-full flex items-center justify-center"
                     >
-                      <ImageWithFallback
-                        src={activeCaseStudy.gallery[currentImageIndex]}
-                        alt={`${activeCaseStudy.title} - Image ${currentImageIndex + 1}`}
-                        className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
-                      />
+                      <div className="relative max-w-full max-h-full">
+                        <ImageWithFallback
+                          src={activeCaseStudy.gallery[currentImageIndex]}
+                          alt={`${activeCaseStudy.title} - Image ${currentImageIndex + 1}`}
+                          className="max-w-full max-h-[400px] lg:max-h-[600px] object-contain rounded-xl shadow-2xl"
+                        />
+                      </div>
                     </motion.div>
                   </AnimatePresence>
 
                   {/* Navigation Arrows */}
-                  <motion.button
-                    whileHover={{ scale: 1.1, x: -5 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md shadow-lg"
-                    onClick={prevImage}
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8666A5" strokeWidth="2">
-                      <polyline points="15 18 9 12 15 6" />
-                    </svg>
-                  </motion.button>
+                  {activeCaseStudy.gallery.length > 1 && (
+                    <>
+                      <motion.button
+                        whileHover={{ scale: 1.1, x: -3 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all"
+                        onClick={prevImage}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8666A5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                      </motion.button>
 
-                  <motion.button
-                    whileHover={{ scale: 1.1, x: 5 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md shadow-lg"
-                    onClick={nextImage}
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8666A5" strokeWidth="2">
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
-                  </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.1, x: 3 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all"
+                        onClick={nextImage}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8666A5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                      </motion.button>
+                    </>
+                  )}
 
                   {/* Image Counter */}
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-white/90 backdrop-blur-md text-sm font-semibold text-[#8666A5]">
+                  <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-white/95 backdrop-blur-sm text-xs md:text-sm font-bold text-[#8666A5] shadow-lg">
                     {currentImageIndex + 1} / {activeCaseStudy.gallery.length}
                   </div>
                 </div>
 
-                {/* Content */}
-                <div className="p-12 overflow-y-auto">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <span className="inline-block px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-[#8666A5] text-white">
-                      {activeCaseStudy.category}
-                    </span>
+                {/* Content Section - Perfectly Aligned */}
+                <div className="relative bg-gradient-to-br from-[#f5f0ed] to-[#e8ddd8] overflow-y-auto">
+                  <div className="p-6 md:p-10 lg:p-12">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="space-y-6 md:space-y-8"
+                    >
+                      {/* Category Badge */}
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        <span className="inline-flex items-center px-4 py-2 rounded-full text-xs md:text-sm font-bold tracking-wider uppercase bg-gradient-to-r from-[#8666A5] to-[#9d7bb8] text-white shadow-md">
+                          <span className="w-2 h-2 rounded-full bg-white mr-2 animate-pulse" />
+                          {activeCaseStudy.category}
+                        </span>
+                      </motion.div>
 
-                    <h2 className="text-5xl font-bold text-[#8666A5] mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
-                      {activeCaseStudy.title}
-                    </h2>
-
-                    <p className="text-xl text-[#6b4d7a] mb-8">
-                      {activeCaseStudy.client}
-                    </p>
-
-                    <div className="w-20 h-1 bg-[#8666A5] mb-8" />
-
-                    <p className="text-lg text-[#6b4d7a] leading-relaxed mb-12">
-                      {activeCaseStudy.description}
-                    </p>
-
-                    <h3 className="text-2xl font-bold text-[#8666A5] mb-6">
-                      Campaign Results
-                    </h3>
-
-                    <div className="space-y-6">
-                      {activeCaseStudy.results.map((result, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.3 + i * 0.1 }}
-                          className="flex justify-between items-center p-4 rounded-xl bg-white/50"
+                      {/* Title */}
+                      <div>
+                        <h2 
+                          className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#8666A5] mb-3 leading-tight" 
+                          style={{ fontFamily: 'Playfair Display, serif' }}
                         >
-                          <span className="text-lg text-[#6b4d7a]">
-                            {result.label}
-                          </span>
-                          <span className="text-3xl font-bold text-[#8666A5]" style={{ fontFamily: 'Playfair Display, serif' }}>
-                            {result.value}
-                          </span>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
+                          {activeCaseStudy.title}
+                        </h2>
+                        
+                        {/* Decorative underline */}
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: '80px' }}
+                          transition={{ delay: 0.4, duration: 0.6 }}
+                          className="h-1 bg-gradient-to-r from-[#8666A5] to-transparent rounded-full"
+                        />
+                      </div>
+
+                      {/* Client */}
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8666A5] to-[#9d7bb8] flex items-center justify-center shadow-md">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-xs text-[#8666A5] font-semibold uppercase tracking-wider">Client</p>
+                          <p className="text-lg md:text-xl font-bold text-[#6b4d7a]">
+                            {activeCaseStudy.client}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-[#8666A5]/10">
+                        <p className="text-base md:text-lg text-[#6b4d7a] leading-relaxed">
+                          {activeCaseStudy.description}
+                        </p>
+                      </div>
+
+                      {/* Results Section */}
+                      <div>
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8666A5] to-[#9d7bb8] flex items-center justify-center shadow-md">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                          </div>
+                          <h3 className="text-xl md:text-2xl font-bold text-[#8666A5]">
+                            Campaign Results
+                          </h3>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                          {activeCaseStudy.results.map((result, i) => (
+                            <motion.div
+                              key={i}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.4 + i * 0.1 }}
+                              whileHover={{ scale: 1.02, x: 4 }}
+                              className="group relative bg-white/80 backdrop-blur-sm rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-[#8666A5]/10 overflow-hidden"
+                            >
+                              {/* Gradient accent on hover */}
+                              <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#8666A5] to-[#9d7bb8] transform scale-y-0 group-hover:scale-y-100 transition-transform origin-top" />
+                              
+                              <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                  <p className="text-xs md:text-sm text-[#8666A5] font-semibold uppercase tracking-wider mb-1">
+                                    {result.label}
+                                  </p>
+                                  <div className="w-12 h-0.5 bg-gradient-to-r from-[#8666A5]/30 to-transparent rounded-full" />
+                                </div>
+                                <div 
+                                  className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-br from-[#8666A5] to-[#9d7bb8] bg-clip-text text-transparent" 
+                                  style={{ fontFamily: 'Playfair Display, serif' }}
+                                >
+                                  {result.value}
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
                 </div>
               </div>
             </motion.div>
