@@ -547,19 +547,121 @@ const Portfolio = () => {
                   ))}
                 </motion.div>
 
-                {/* Content - Third card only - Mobile friendly */}
-                {index === 2 && !isMobile && (
-                  <motion.div
-                    className="absolute bottom-8 md:bottom-12 left-8 md:left-12 z-20"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: isVisible ? 1 : 0 }}
-                    transition={{ delay: 0.8 }}
+                {/* Professional Content Card - ALL CARDS */}
+                <motion.div
+                  className="absolute bottom-4 md:bottom-8 left-4 right-4 md:left-8 md:right-8 z-20 pointer-events-none"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
+                  transition={{ delay: 0.5 + index * 0.1 }}
+                >
+                  <div 
+                    className="backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-2xl"
+                    style={{
+                      background: isSecond 
+                        ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08))'
+                        : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85))',
+                      border: `1px solid ${isSecond ? 'rgba(255, 255, 255, 0.25)' : 'rgba(134, 102, 165, 0.2)'}`,
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
+                    }}
                   >
-                    <h3 className="text-[#8666A5] text-2xl md:text-3xl font-bold" style={{ fontFamily: 'Impact, sans-serif' }}>
-                      COMMERCIAL
+                    {/* Category Badge */}
+                    <div className="flex items-center justify-between mb-3 md:mb-4">
+                      <span 
+                        className="text-xs md:text-sm font-bold tracking-wider uppercase"
+                        style={{ 
+                          color: isSecond ? '#fff' : '#8666A5',
+                        }}
+                      >
+                        {item.category}
+                      </span>
+                      <span 
+                        className="text-xs md:text-sm font-semibold"
+                        style={{ 
+                          color: isSecond ? 'rgba(255, 255, 255, 0.8)' : '#6b4d7a',
+                        }}
+                      >
+                        {item.client}
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <h3 
+                      className="text-xl md:text-3xl lg:text-4xl font-bold mb-2 md:mb-3 leading-tight"
+                      style={{ 
+                        fontFamily: 'Playfair Display, serif',
+                        color: isSecond ? '#fff' : '#8666A5',
+                      }}
+                    >
+                      {item.title}
                     </h3>
-                  </motion.div>
-                )}
+
+                    {/* Description */}
+                    <p 
+                      className="text-sm md:text-base lg:text-lg mb-4 md:mb-6 leading-relaxed line-clamp-2"
+                      style={{ 
+                        color: isSecond ? 'rgba(255, 255, 255, 0.9)' : '#6b4d7a',
+                      }}
+                    >
+                      {item.description}
+                    </p>
+
+                    {/* Results Grid */}
+                    <div className="grid grid-cols-3 gap-2 md:gap-4">
+                      {item.results.map((result, i) => (
+                        <div key={i} className="text-center">
+                          <div 
+                            className="text-lg md:text-2xl lg:text-3xl font-bold mb-0.5 md:mb-1"
+                            style={{ 
+                              fontFamily: 'Playfair Display, serif',
+                              color: isSecond ? '#fff' : '#8666A5',
+                            }}
+                          >
+                            {result.value}
+                          </div>
+                          <div 
+                            className="text-xs md:text-sm font-medium"
+                            style={{ 
+                              color: isSecond ? 'rgba(255, 255, 255, 0.8)' : '#6b4d7a',
+                            }}
+                          >
+                            {result.label}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* View More Indicator */}
+                    <motion.div
+                      className="flex items-center justify-center gap-2 mt-4 md:mt-6 pt-4 border-t"
+                      style={{
+                        borderColor: isSecond ? 'rgba(255, 255, 255, 0.2)' : 'rgba(134, 102, 165, 0.2)',
+                      }}
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <span 
+                        className="text-xs md:text-sm font-semibold"
+                        style={{ 
+                          color: isSecond ? '#fff' : '#8666A5',
+                        }}
+                      >
+                        View Full Case Study
+                      </span>
+                      <svg 
+                        width="16" 
+                        height="16" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2"
+                        style={{ color: isSecond ? '#fff' : '#8666A5' }}
+                      >
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12 5 19 12 12 19" />
+                      </svg>
+                    </motion.div>
+                  </div>
+                </motion.div>
 
                 {/* Hover Overlay - Desktop only */}
                 <AnimatePresence>
