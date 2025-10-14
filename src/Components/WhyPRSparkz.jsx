@@ -45,7 +45,7 @@ const WhyPRSparkz = () => {
       title: "+127%",
       subtitle: "Growth in Engagement",
       description: "Strategic approach delivers measurable results",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop&q=80"
+      image: "/images/why/stat-1.jpg"
     },
     {
       icon: (
@@ -56,7 +56,7 @@ const WhyPRSparkz = () => {
       title: "+89%",
       subtitle: "Brand Consistency",
       description: "Unified messaging across all channels",
-      image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=600&fit=crop&q=80"
+      image: "/images/why/stat-2.jpg"
     },
     {
       icon: (
@@ -67,7 +67,7 @@ const WhyPRSparkz = () => {
       title: "3x",
       subtitle: "Faster Execution",
       description: "AI-powered campaign delivery",
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&q=80"
+      image: "/images/why/stat-3.jpg"
     }
   ];
 
@@ -84,7 +84,7 @@ const WhyPRSparkz = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 13L12 10M12 10L16 8" />
         </svg>
       ),
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop&q=80"
+      image: "/images/why/feature-1.jpg"
     },
     {
       title: "Multi-Platform Strategy",
@@ -100,7 +100,7 @@ const WhyPRSparkz = () => {
           <circle cx="16" cy="9" r="0.5" fill="currentColor" />
         </svg>
       ),
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop&q=80"
+      image: "/images/why/feature-2.jpg"
     },
     {
       title: "Creative Excellence",
@@ -113,7 +113,7 @@ const WhyPRSparkz = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 7l1-1M7 7l-1-1M17 17l1 1M7 17l-1 1" />
         </svg>
       ),
-      image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop&q=80"
+      image: "/images/why/feature-3.jpg"
     },
     {
       title: "24/7 Support",
@@ -127,7 +127,7 @@ const WhyPRSparkz = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.34 6.34l1.41 1.41M16.25 16.25l1.41 1.41M6.34 17.66l1.41-1.41M16.25 7.75l1.41-1.41" opacity="0.5" />
         </svg>
       ),
-      image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400&h=300&fit=crop&q=80"
+      image: "/images/why/feature-4.jpg"
     }
   ];
 
@@ -183,13 +183,47 @@ const WhyPRSparkz = () => {
           {/* Interactive Statistics with Images */}
           <div className="grid lg:grid-cols-2 gap-8 md:gap-12 mb-16 md:mb-20 items-center">
             {/* Image Showcase */}
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl group h-64 md:h-80">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl group h-64 md:h-80 bg-gradient-to-br from-purple-100 to-purple-50">
               <img
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 src={stats[activeStat].image}
                 alt={stats[activeStat].subtitle}
                 loading="lazy"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  const fallback = e.target.nextSibling;
+                  if (fallback) fallback.style.display = 'flex';
+                }}
               />
+              {/* Coming Soon Fallback */}
+              <div 
+                className="absolute inset-0 flex-col items-center justify-center bg-gradient-to-br from-purple-100 via-lavender-100 to-purple-50"
+                style={{ display: 'none' }}
+              >
+                <div className="text-center px-6">
+                  <svg 
+                    className="w-16 h-16 mx-auto mb-4 opacity-60" 
+                    style={{ color: '#8666A5' }}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
+                    />
+                  </svg>
+                  <div 
+                    className="font-bold text-xl mb-2"
+                    style={{ color: '#8666A5' }}
+                  >
+                    Coming Soon
+                  </div>
+                  <div className="text-sm text-gray-500 font-medium">{stats[activeStat].subtitle}</div>
+                </div>
+              </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
               <div className="absolute bottom-6 left-6 text-white">
                 <h3 className="text-2xl font-bold mb-2">{stats[activeStat].title}</h3>
@@ -279,13 +313,44 @@ const WhyPRSparkz = () => {
                 onMouseLeave={(e) => e.currentTarget.style.borderColor = '#f3f4f6'}
               >
                 {/* Feature Image */}
-                <div className="relative h-40 overflow-hidden">
+                <div className="relative h-40 overflow-hidden bg-gradient-to-br from-purple-100 to-purple-50">
                   <img
                     src={feature.image}
                     alt={feature.title}
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                     loading="lazy"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      const fallback = e.target.nextSibling;
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
                   />
+                  {/* Coming Soon Fallback */}
+                  <div 
+                    className="absolute inset-0 flex-col items-center justify-center bg-gradient-to-br from-purple-100 via-lavender-100 to-purple-50"
+                    style={{ display: 'none' }}
+                  >
+                    <svg 
+                      className="w-12 h-12 mb-2 opacity-60" 
+                      style={{ color: '#8666A5' }}
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
+                      />
+                    </svg>
+                    <div 
+                      className="font-bold text-sm"
+                      style={{ color: '#8666A5' }}
+                    >
+                      Coming Soon
+                    </div>
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
 
                   {/* Icon in top-left corner */}
@@ -359,12 +424,43 @@ const WhyPRSparkz = () => {
                 </div>
 
                 {/* Image */}
-                <div className="relative min-h-64 lg:min-h-full">
+                <div className="relative min-h-64 lg:min-h-full bg-gradient-to-br from-purple-100 to-purple-50">
                   <img
-                    src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                    src="/images/why/cta-image.jpg"
                     alt="Professional Consultation"
                     className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      const fallback = e.target.nextSibling;
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
                   />
+                  {/* Coming Soon Fallback */}
+                  <div 
+                    className="absolute inset-0 flex-col items-center justify-center bg-gradient-to-br from-purple-100 via-lavender-100 to-purple-50"
+                    style={{ display: 'none' }}
+                  >
+                    <svg 
+                      className="w-20 h-20 mb-4 opacity-60" 
+                      style={{ color: '#8666A5' }}
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
+                      />
+                    </svg>
+                    <div 
+                      className="font-bold text-2xl"
+                      style={{ color: '#8666A5' }}
+                    >
+                      Coming Soon
+                    </div>
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-l from-white/10 to-purple-600/10"></div>
                 </div>
               </div>

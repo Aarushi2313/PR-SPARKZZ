@@ -155,22 +155,22 @@ const AboutUs = () => {
           <div className="absolute inset-0 pointer-events-none z-5 hidden xl:block">
             {[
               // Large polaroids - positioned at edges to avoid content overlap
-              { id: 1, rotation: -12, delay: 0.1, left: '2%', top: '8%', size: 'large', pinType: 'pin', label: 'Creativity', image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=600&fit=crop' },
-              { id: 2, rotation: 8, delay: 0.25, left: '92%', top: '5%', size: 'large', pinType: 'tape', label: 'Innovation', image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=600&fit=crop' },
-              { id: 3, rotation: -5, delay: 0.4, left: '1%', top: '82%', size: 'large', pinType: 'tape', label: 'Strategy', image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=600&fit=crop' },
-              { id: 4, rotation: 15, delay: 0.55, left: '93%', top: '78%', size: 'large', pinType: 'pin', label: 'Impact', image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&h=600&fit=crop' },
+              { id: 1, rotation: -12, delay: 0.1, left: '2%', top: '8%', size: 'large', pinType: 'pin', label: 'Creativity', image: '/images/about/polaroid-1.jpg' },
+              { id: 2, rotation: 8, delay: 0.25, left: '92%', top: '5%', size: 'large', pinType: 'tape', label: 'Innovation', image: '/images/about/polaroid-2.jpg' },
+              { id: 3, rotation: -5, delay: 0.4, left: '1%', top: '82%', size: 'large', pinType: 'tape', label: 'Strategy', image: '/images/about/polaroid-3.jpg' },
+              { id: 4, rotation: 15, delay: 0.55, left: '93%', top: '78%', size: 'large', pinType: 'pin', label: 'Impact', image: '/images/about/polaroid-4.jpg' },
               
               // Medium polaroids - carefully positioned to avoid overlap
-              { id: 5, rotation: -8, delay: 0.7, left: '1%', top: '35%', size: 'medium', pinType: 'pin', label: 'Growth', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=500&fit=crop' },
-              { id: 6, rotation: 6, delay: 0.85, left: '94%', top: '92%', size: 'medium', pinType: 'tape', label: 'Results', image: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=500&h=500&fit=crop' },
-              { id: 7, rotation: -10, delay: 0.95, left: '3%', top: '58%', size: 'medium', pinType: 'pin', label: 'Success', image: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=500&h=500&fit=crop' },
-              { id: 8, rotation: 12, delay: 1.05, left: '92%', top: '38%', size: 'medium', pinType: 'tape', label: 'Vision', image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&h=500&fit=crop' },
+              { id: 5, rotation: -8, delay: 0.7, left: '1%', top: '35%', size: 'medium', pinType: 'pin', label: 'Growth', image: '/images/about/polaroid-5.jpg' },
+              { id: 6, rotation: 6, delay: 0.85, left: '94%', top: '92%', size: 'medium', pinType: 'tape', label: 'Results', image: '/images/about/polaroid-6.jpg' },
+              { id: 7, rotation: -10, delay: 0.95, left: '3%', top: '58%', size: 'medium', pinType: 'pin', label: 'Success', image: '/images/about/polaroid-7.jpg' },
+              { id: 8, rotation: 12, delay: 1.05, left: '92%', top: '38%', size: 'medium', pinType: 'tape', label: 'Vision', image: '/images/about/polaroid-8.jpg' },
               
               // Small polaroids - edge placement
-              { id: 9, rotation: -6, delay: 1.15, left: '4%', top: '22%', size: 'small', pinType: 'tape', label: 'Team', image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=400&fit=crop' },
-              { id: 10, rotation: 9, delay: 1.25, left: '91%', top: '18%', size: 'small', pinType: 'pin', label: 'Ideas', image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=400&fit=crop' },
-              { id: 11, rotation: -14, delay: 1.35, left: '2%', top: '68%', size: 'small', pinType: 'pin', label: 'Launch', image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&h=400&fit=crop' },
-              { id: 12, rotation: 7, delay: 1.45, left: '93%', top: '58%', size: 'small', pinType: 'tape', label: 'Digital', image: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=400&h=400&fit=crop' },
+              { id: 9, rotation: -6, delay: 1.15, left: '4%', top: '22%', size: 'small', pinType: 'tape', label: 'Team', image: '/images/about/polaroid-9.jpg' },
+              { id: 10, rotation: 9, delay: 1.25, left: '91%', top: '18%', size: 'small', pinType: 'pin', label: 'Ideas', image: '/images/about/polaroid-10.jpg' },
+              { id: 11, rotation: -14, delay: 1.35, left: '2%', top: '68%', size: 'small', pinType: 'pin', label: 'Launch', image: '/images/about/polaroid-11.jpg' },
+              { id: 12, rotation: 7, delay: 1.45, left: '93%', top: '58%', size: 'small', pinType: 'tape', label: 'Digital', image: '/images/about/polaroid-12.jpg' },
             ].map(polaroid => {
               // Define size dimensions based on size property
               const sizeMap = {
@@ -219,13 +219,47 @@ const AboutUs = () => {
                     }
                   }}
                 >
-                  <div className="w-full h-full overflow-hidden rounded-sm">
+                  <div className="w-full h-full overflow-hidden rounded-sm relative">
                     <img 
                       src={polaroid.image} 
                       alt={polaroid.label}
                       className="w-full h-full object-cover"
                       loading="lazy"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        const fallback = e.target.nextSibling;
+                        if (fallback) fallback.style.display = 'flex';
+                      }}
                     />
+                    {/* Coming Soon Fallback */}
+                    <div 
+                      className="absolute inset-0 flex-col items-center justify-center bg-gradient-to-br from-purple-100 via-lavender-100 to-purple-50"
+                      style={{ display: 'none' }}
+                    >
+                      <div className="text-center px-2">
+                        <svg 
+                          className="w-8 h-8 mx-auto mb-1 opacity-60" 
+                          style={{ color: '#8666A5' }}
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={2} 
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
+                          />
+                        </svg>
+                        <div 
+                          className="font-bold text-xs mb-0.5"
+                          style={{ color: '#8666A5' }}
+                        >
+                          Coming Soon
+                        </div>
+                        <div className="text-[8px] text-gray-500 font-medium">{polaroid.label}</div>
+                      </div>
+                    </div>
                   </div>
                   
                   {/* Pin or Tape effect based on type - Enhanced for better visibility */}
