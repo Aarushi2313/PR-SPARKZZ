@@ -335,21 +335,71 @@ const Services = () => {
                       onError={() => handleImageError(service.id)}
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-purple-200">
-                      <div className="text-center px-4">
-                        <div className="text-4xl mb-2 opacity-50">📸</div>
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 via-purple-50 to-purple-100 relative overflow-hidden">
+                      {/* Animated background pattern */}
+                      <div className="absolute inset-0 opacity-10">
+                        <div className="absolute top-0 left-0 w-full h-full" 
+                          style={{
+                            backgroundImage: `linear-gradient(45deg, ${service.colorFrom} 25%, transparent 25%, transparent 75%, ${service.colorFrom} 75%, ${service.colorFrom}), 
+                                            linear-gradient(45deg, ${service.colorFrom} 25%, transparent 25%, transparent 75%, ${service.colorFrom} 75%, ${service.colorFrom})`,
+                            backgroundSize: '20px 20px',
+                            backgroundPosition: '0 0, 10px 10px'
+                          }}
+                        />
+                      </div>
+                      
+                      {/* Coming Soon Content */}
+                      <div className="relative z-10 text-center px-6 py-4">
+                        {/* Icon */}
+                        <div className="mb-3">
+                          <div 
+                            className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500"
+                            style={{ 
+                              background: `linear-gradient(135deg, ${service.colorFrom}, ${service.colorTo})`
+                            }}
+                          >
+                            <svg 
+                              className="w-8 h-8 text-white" 
+                              fill="none" 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24"
+                            >
+                              <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth={2} 
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                        
+                        {/* Text */}
                         <div 
-                          className="text-lg font-bold bg-clip-text text-transparent"
+                          className="text-xl font-bold mb-1 tracking-wide"
                           style={{ 
                             background: `linear-gradient(135deg, ${service.colorFrom}, ${service.colorTo})`,
                             WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent'
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text'
                           }}
                         >
                           Coming Soon
                         </div>
-                        <div className="text-xs text-slate-500 mt-1">{service.title}</div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                          {service.title}
+                        </div>
                       </div>
+                      
+                      {/* Decorative elements */}
+                      <div 
+                        className="absolute top-3 right-3 w-2 h-2 rounded-full opacity-60 animate-pulse"
+                        style={{ backgroundColor: service.colorFrom }}
+                      />
+                      <div 
+                        className="absolute bottom-3 left-3 w-3 h-3 rounded-full opacity-40 animate-pulse"
+                        style={{ backgroundColor: service.colorTo, animationDelay: '1s' }}
+                      />
                     </div>
                   )}
                   
