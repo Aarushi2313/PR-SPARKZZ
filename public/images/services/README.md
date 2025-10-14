@@ -1,30 +1,34 @@
-# Services Images Guide
+# Services Images
 
-Add your service images to this folder with the following names:
+## Add your service images here
 
-1. **campaign.jpg** or **campaign.png** - Campaign Planning service
-2. **social.jpg** or **social.png** - Social Media service
-3. **influencer.jpg** or **influencer.png** - Influencer Marketing service
-4. **celebrity.jpg** or **celebrity.png** - Celebrity Branding service
-5. **website.jpg** or **website.png** - Web Development service
-6. **digital.jpg** or **digital.png** - Digital Marketing service
-7. **offline.jpg** or **offline.png** - Offline Marketing service
-8. **ai.jpg** or **ai.png** - AI Solutions service
+Place your images with the following names:
 
-## Image Specifications
-- **Recommended Size**: 600x400 pixels (3:2 aspect ratio)
-- **Format**: JPG or PNG
-- **File Size**: Under 500KB for optimal performance
-- **Quality**: High resolution, professional photos
+1. **campaign.jpg** - Campaign Planning service image
+2. **social.jpg** - Social Media service image
+3. **influencer.jpg** - Influencer Marketing service image
+4. **celebrity.jpg** - Celebrity Branding service image
+5. **website.jpg** - Web Development service image
+6. **digital.jpg** - Digital Marketing service image
+7. **offline.jpg** - Offline Marketing service image
+8. **ai.jpg** - AI Solutions service image
 
-## What to Show in Each Image
-- **Campaign Planning**: Strategy sessions, data analytics, planning boards
-- **Social Media**: Social media icons, engagement metrics, content creation
-- **Influencer Marketing**: Influencers creating content, collaboration scenes
-- **Celebrity Branding**: Celebrity partnerships, endorsements, events
-- **Web Development**: Modern websites, code, responsive designs
-- **Digital Marketing**: SEO, digital ads, analytics dashboards
-- **Offline Marketing**: Events, billboards, print materials, exhibitions
-- **AI Solutions**: AI technology, automation, data processing
+### Recommended image specifications:
+- **Format**: JPG, PNG, or WebP
+- **Dimensions**: 600x400px (or similar 3:2 ratio)
+- **File size**: Under 500KB for optimal performance
+- **Quality**: High resolution but optimized for web
 
-If an image is not added, the service card will display "Coming Soon" text automatically.
+### Example naming:
+```
+campaign.jpg
+social.png
+influencer.jpg
+celebrity.jpg
+website.jpg
+digital.jpg
+offline.jpg
+ai.jpg
+```
+
+**Note**: If an image is not found, the service card will display "Coming Soon" text with a placeholder icon.
