@@ -1164,8 +1164,8 @@ const Portfolio = () => {
                 </div>
 
                 {/* Content Section - Perfectly Aligned */}
-                <div className="relative bg-gradient-to-br from-[#f5f0ed] to-[#e8ddd8] overflow-y-auto">
-                  <div className="p-6 md:p-10 lg:p-12">
+                <div className="relative bg-gradient-to-br from-[#f5f0ed] to-[#e8ddd8] overflow-y-auto" style={{ maxHeight: 'calc(100vh - 4rem)' }}>
+                  <div className="p-6 md:p-10 lg:p-12 pb-8">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
