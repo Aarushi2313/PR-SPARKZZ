@@ -1,1 +1,0 @@
-// Place your star image in this directory. Example: /src/assets/star.png
