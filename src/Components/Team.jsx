@@ -49,6 +49,13 @@ const Team = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Track image loading errors
+  const [imageErrors, setImageErrors] = useState({});
+  
+  const handleImageError = (memberId, type = 'main') => {
+    setImageErrors(prev => ({ ...prev, [`${memberId}-${type}`]: true }));
+  };
+
   const teamMembers = [
     {
       id: 1,
@@ -56,11 +63,11 @@ const Team = () => {
       role: "Marketing Maestro",
       bio: "Strategic marketing wizard who turns brands into legends. When she's not crafting campaigns, she's probably plotting world domination through killer content.",
       skills: ["Brand Alchemy", "Campaign Wizardry", "ROI Sorcery"],
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&q=80",
-      video: "https://assets.mixkit.co/videos/preview/mixkit-woman-posing-in-studio-39875-large.mp4",
+      image: "/images/team/priyanka.jpg",
+      video: "/videos/team/priyanka.mp4",
       polaroids: [
-        "https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=300&h=300&fit=crop&q=80",
-        "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=300&h=300&fit=crop&q=80"
+        "/images/team/polaroids/priyanka-1.jpg",
+        "/images/team/polaroids/priyanka-2.jpg"
       ],
       colorFrom: "#8666A5",
       colorTo: "#b39ddb",
@@ -72,11 +79,11 @@ const Team = () => {
       role: "Visual Visionary",
       bio: "Design superhero who makes pixels dance and colors sing. His designs don't just look good—they have personality and tell stories that stick.",
       skills: ["Pixel Perfection", "Color Wizardry", "Visual Storytelling"],
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&q=80",
-      video: "https://assets.mixkit.co/videos/preview/mixkit-man-working-on-laptop-39771-large.mp4",
+      image: "/images/team/ankush.jpg",
+      video: "/videos/team/ankush.mp4",
       polaroids: [
-        "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&h=300&fit=crop&q=80",
-        "https://images.unsplash.com/photo-1558655146-d09347e92766?w=300&h=300&fit=crop&q=80"
+        "/images/team/polaroids/ankush-1.jpg",
+        "/images/team/polaroids/ankush-2.jpg"
       ],
       colorFrom: "#9b7ec4",
       colorTo: "#c7b3e5",
@@ -88,11 +95,11 @@ const Team = () => {
       role: "3D Dreamweaver",
       bio: "Reality bender who builds impossible worlds before breakfast. If you can imagine it, he can make it exist in stunning 3D glory.",
       skills: ["Reality Bending", "3D Magic", "Virtual World Building"],
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&q=80",
-      video: "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-woman-taking-photos-39772-large.mp4",
+      image: "/images/team/bhawneet.jpg",
+      video: "/videos/team/bhawneet.mp4",
       polaroids: [
-        "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=300&h=300&fit=crop&q=80",
-        "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&h=300&fit=crop&q=80"
+        "/images/team/polaroids/bhawneet-1.jpg",
+        "/images/team/polaroids/bhawneet-2.jpg"
       ],
       colorFrom: "#7556a1",
       colorTo: "#a890cc",
@@ -104,11 +111,11 @@ const Team = () => {
       role: "Digital Dynamo",
       bio: "Algorithm whisperer and engagement guru. He doesn't just follow trends—he creates them, then optimizes them for maximum impact.",
       skills: ["Algorithm Whispering", "Engagement Alchemy", "Growth Hacking"],
-      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&q=80",
-      video: "https://assets.mixkit.co/videos/preview/mixkit-young-man-working-on-a-laptop-39768-large.mp4",
+      image: "/images/team/shrey.jpg",
+      video: "/videos/team/shrey.mp4",
       polaroids: [
-        "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=300&h=300&fit=crop&q=80",
-        "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=300&h=300&fit=crop&q=80"
+        "/images/team/polaroids/shrey-1.jpg",
+        "/images/team/polaroids/shrey-2.jpg"
       ],
       colorFrom: "#8666A5",
       colorTo: "#b39ddb",
@@ -120,11 +127,11 @@ const Team = () => {
       role: "Creative Chameleon",
       bio: "Multi-talented creative force who moves between design and video like a artistic ninja. His work doesn't just capture attention—it holds it hostage.",
       skills: ["Creative Shapeshifting", "Video Sorcery", "Multi-Format Magic"],
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop&q=80",
-      video: "https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-taking-a-photo-39773-large.mp4",
+      image: "/images/team/prateek.jpg",
+      video: "/videos/team/prateek.mp4",
       polaroids: [
-        "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=300&h=300&fit=crop&q=80",
-        "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=300&h=300&fit=crop&q=80"
+        "/images/team/polaroids/prateek-1.jpg",
+        "/images/team/polaroids/prateek-2.jpg"
       ],
       colorFrom: "#9b7ec4",
       colorTo: "#c7b3e5",
@@ -494,11 +501,32 @@ const Team = () => {
                         className="w-28 h-28 rounded-2xl overflow-hidden shadow-xl ring-4 ring-white"
                         whileHover={{ scale: 1.05, rotate: 3 }}
                       >
-                        <img
-                          src={member.image}
-                          alt={member.name}
-                          className="w-full h-full object-cover"
-                        />
+                        {!imageErrors[`${member.id}-main`] ? (
+                          <img
+                            src={member.image}
+                            alt={member.name}
+                            className="w-full h-full object-cover"
+                            onError={() => handleImageError(member.id, 'main')}
+                          />
+                        ) : (
+                          <div 
+                            className="w-full h-full flex flex-col items-center justify-center"
+                            style={{
+                              background: `linear-gradient(135deg, ${member.colorFrom}15, ${member.colorTo}15)`
+                            }}
+                          >
+                            <Users 
+                              className="w-10 h-10 mb-1"
+                              style={{ color: member.colorFrom }}
+                            />
+                            <span 
+                              className="text-[10px] font-bold text-center px-2"
+                              style={{ color: member.colorTo }}
+                            >
+                              Coming Soon
+                            </span>
+                          </div>
+                        )}
                       </motion.div>
                       
                       {/* Status Badge */}
