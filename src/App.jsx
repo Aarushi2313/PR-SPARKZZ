@@ -20,62 +20,33 @@ import ContactForm from "./Components/ContactForm.jsx";
 // Utility Components
 import ScrollToTop from "./Components/ScrollToTop.jsx";
 
-// Admin Components
-import { AuthProvider } from "./context/AuthContext.jsx";
-import AdminLogin from "./Components/Admin/AdminLogin.jsx";
-import AdminDashboard from "./Components/Admin/AdminDashboard.jsx";
-import ProtectedRoute from "./Components/Admin/ProtectedRoute.jsx";
-
 function App() {
   return (
-    <AuthProvider>
-      <div className="font-sans bg-black text-white relative">
-        {/* Content Layer */}
-        <div className="relative">
-          <ScrollToTop />
-          <Routes>
-            {/* Admin Routes - No NavBar/Footer */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route
-              path="/admin/dashboard"
-              element={
-                <ProtectedRoute>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Public Routes - With NavBar/Footer */}
-            <Route
-              path="/*"
-              element={
-                <>
-                  <NavBar />
-                  <Routes>
-                    <Route
-                      path="/"
-                      element={
-                        <>
-                          <Hero />
-                          <Services />
-                          <WhyPRSparkz />
-                          <Testimonials />
-                          <ContactForm />
-                        </>
-                      }
-                    />
-                    <Route path="/about" element={<AboutUs />} />
-                    <Route path="/portfolio" element={<Portfolio />} />
-                    <Route path="/team" element={<Team />} />
-                  </Routes>
-                  <Footer />
-                </>
-              }
-            />
-          </Routes>
-        </div>
+    <div className="font-sans bg-black text-white relative">
+      {/* Content Layer */}
+      <div className="relative">
+        <ScrollToTop />
+        <NavBar />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Hero />
+                <Services />
+                <WhyPRSparkz />
+                <Testimonials />
+                <ContactForm />
+              </>
+            }
+          />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/team" element={<Team />} />
+        </Routes>
+        <Footer />
       </div>
-    </AuthProvider>
+    </div>
   );
 }
 
