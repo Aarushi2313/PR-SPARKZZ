@@ -1,9 +1,15 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useReducedMotion } from 'framer-motion';
 import { Target, Eye, Star, Sparkles } from 'lucide-react';
 
-// Optimized Image component with lazy loading
-const ImageWithFallback = ({ src, alt, className, priority = false }) => {
+// Detect if mobile device
+const isMobile = () => {
+  if (typeof window === 'undefined') return false;
+  return window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
+// Image component with fallback - optimized
+const ImageWithFallback = ({ src, alt, className }) => {
   const [imgSrc, setImgSrc] = useState(src);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -25,7 +31,7 @@ const ImageWithFallback = ({ src, alt, className, priority = false }) => {
         src={imgSrc}
         alt={alt}
         className={className}
-        loading={priority ? "eager" : "lazy"}
+        loading="lazy"
         onLoad={() => setLoading(false)}
         onError={() => {
           setError(true);
@@ -41,37 +47,48 @@ const ImageWithFallback = ({ src, alt, className, priority = false }) => {
 const Portfolio = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [activeCaseStudy, setActiveCaseStudy] = useState(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imageDirection, setImageDirection] = useState(1);
   const containerRef = useRef(null);
-  const prefersReducedMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion();
+  const mobile = useMemo(() => isMobile(), []);
   
-  // Detect mobile device
-  const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"]
   });
 
-  // Simplified scroll effects for mobile
-  const y = useTransform(scrollYProgress, [0, 1], isMobile ? [50, -50] : [100, -100]);
-  const smoothY = useSpring(y, { stiffness: isMobile ? 50 : 100, damping: 30 });
+  // Simplified transforms for mobile
+  const y = useTransform(scrollYProgress, [0, 1], mobile ? [50, -50] : [100, -100]);
+  const smoothY = useSpring(y, { stiffness: mobile ? 50 : 100, damping: mobile ? 20 : 30 });
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  useEffect(() => {
+    // Disable mouse tracking on mobile for performance
+    if (mobile) return;
+    
+    const handleMouseMove = (e) => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setMousePos({
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        });
+      }
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('mousemove', handleMouseMove);
+      return () => container.removeEventListener('mousemove', handleMouseMove);
+    }
+  }, [mobile]);
 
   const portfolioItems = [
     {
@@ -173,29 +190,23 @@ const Portfolio = () => {
     }
   ];
 
-  // Memoize navigation functions
-  const nextImage = useCallback(() => {
+  const nextImage = () => {
     if (activeCaseStudy) {
       setImageDirection(1);
       setCurrentImageIndex((prev) => 
         (prev + 1) % activeCaseStudy.gallery.length
       );
     }
-  }, [activeCaseStudy]);
+  };
 
-  const prevImage = useCallback(() => {
+  const prevImage = () => {
     if (activeCaseStudy) {
       setImageDirection(-1);
       setCurrentImageIndex((prev) => 
         prev === 0 ? activeCaseStudy.gallery.length - 1 : prev - 1
       );
     }
-  }, [activeCaseStudy]);
-
-  // Reduce background elements for mobile
-  const backgroundElements = useMemo(() => 
-    isMobile ? 4 : 8, 
-  [isMobile]);
+  };
 
   return (
     <motion.div
@@ -203,25 +214,26 @@ const Portfolio = () => {
       id="portfolio"
       className="relative min-h-screen bg-[#f5f0ed] overflow-hidden pt-32 md:pt-40"
     >
-      {/* Simplified Background Elements */}
+      {/* Refined Background Elements - Reduced for mobile */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(backgroundElements)].map((_, i) => (
+        {!mobile && [...Array(6)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full"
             style={{
               background: `radial-gradient(circle, rgba(134, 102, 165, 0.06) 0%, transparent 70%)`,
-              width: isMobile ? `${Math.random() * 200 + 100}px` : `${Math.random() * 400 + 200}px`,
-              height: isMobile ? `${Math.random() * 200 + 100}px` : `${Math.random() * 400 + 200}px`,
+              width: `${Math.random() * 300 + 150}px`,
+              height: `${Math.random() * 300 + 150}px`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               filter: 'blur(40px)',
+              willChange: 'transform',
             }}
-            animate={!prefersReducedMotion && !isMobile ? {
+            animate={{
               x: [0, Math.random() * 50 - 25],
               y: [0, Math.random() * 50 - 25],
               scale: [1, 1.05, 1],
-            } : {}}
+            }}
             transition={{
               duration: Math.random() * 15 + 10,
               repeat: Infinity,
@@ -230,6 +242,16 @@ const Portfolio = () => {
             }}
           />
         ))}
+        
+        {/* Static grid overlay for mobile */}
+        <div 
+          className="absolute inset-0" 
+          style={{
+            backgroundImage: `linear-gradient(rgba(134, 102, 165, 0.02) 1px, transparent 1px),
+                             linear-gradient(90deg, rgba(134, 102, 165, 0.02) 1px, transparent 1px)`,
+            backgroundSize: mobile ? '40px 40px' : '50px 50px',
+          }}
+        />
       </div>
 
       {/* Enhanced Header Section */}
@@ -335,81 +357,87 @@ const Portfolio = () => {
       </motion.div>
 
       {/* Portfolio Grid */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 relative">
           {portfolioItems.map((item, index) => {
             const isSecond = index === 1;
+            const parallaxX = (!mobile && hoveredCard === item.id) ? (mousePos.x - window.innerWidth / 2) / 50 : 0;
+            const parallaxY = (!mobile && hoveredCard === item.id) ? (mousePos.y - window.innerHeight / 2) / 50 : 0;
 
             return (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.95, rotateY: mobile ? 0 : -15 }}
                 animate={{ 
                   opacity: isVisible ? 1 : 0, 
                   scale: isVisible ? 1 : 0.95,
+                  rotateY: 0
                 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                whileHover={!isMobile ? { scale: 1.02, transition: { duration: 0.2 } } : {}}
+                transition={{ delay: mobile ? index * 0.08 : index * 0.15, duration: mobile ? 0.5 : 0.8, type: "spring", stiffness: mobile ? 150 : 100 }}
+                whileHover={!mobile ? { scale: 1.02, transition: { duration: 0.3 } } : {}}
                 className="relative cursor-pointer group min-h-[500px] md:min-h-[700px] overflow-hidden"
                 style={{
                   borderTop: index < 2 ? 'none' : '1px solid rgba(134, 102, 165, 0.15)',
                   borderLeft: index % 2 === 0 ? 'none' : '1px solid rgba(134, 102, 165, 0.15)',
                   backgroundColor: isSecond ? '#3d4f51' : '#d4c4c0',
+                  perspective: '1000px',
                 }}
-                onMouseEnter={() => !isMobile && setHoveredCard(item.id)}
-                onMouseLeave={() => !isMobile && setHoveredCard(null)}
+                onMouseEnter={() => setHoveredCard(item.id)}
+                onMouseLeave={() => setHoveredCard(null)}
                 onClick={() => {
                   setActiveCaseStudy(item);
                   setCurrentImageIndex(0);
                 }}
               >
-                {/* Simplified gradient overlay */}
+                {/* Enhanced gradient overlay */}
                 <div 
                   className="absolute inset-0 pointer-events-none z-5"
                   style={{
                     background: isSecond 
-                      ? 'linear-gradient(135deg, rgba(61, 79, 81, 0.4) 0%, transparent 70%)'
-                      : 'linear-gradient(135deg, rgba(212, 196, 192, 0.6) 0%, transparent 70%)',
+                      ? 'linear-gradient(135deg, rgba(61, 79, 81, 0.6) 0%, transparent 50%, rgba(61, 79, 81, 0.4) 100%)'
+                      : 'linear-gradient(135deg, rgba(212, 196, 192, 0.8) 0%, transparent 50%, rgba(212, 196, 192, 0.6) 100%)',
                   }}
                 />
 
-                {/* Number Badge - Simplified */}
+                {/* Number Badge */}
                 <motion.div
-                  className="absolute top-4 md:top-8 left-4 md:left-8 z-20"
-                  animate={!isMobile && hoveredCard === item.id ? {
-                    y: -10,
-                    scale: 1.1,
-                  } : {}}
+                  className="absolute top-8 left-8 z-20"
+                  animate={{
+                    y: hoveredCard === item.id ? -10 : 0,
+                    scale: hoveredCard === item.id ? 1.1 : 1,
+                  }}
                   transition={{ duration: 0.3 }}
                 >
                   <div 
-                    className="w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center text-2xl md:text-3xl font-bold shadow-lg"
+                    className="w-20 h-20 rounded-full flex items-center justify-center text-3xl font-bold shadow-lg"
                     style={{
                       backgroundColor: 'rgba(255, 255, 255, 0.95)',
                       color: '#8666A5',
                       backdropFilter: 'blur(10px)',
                       border: '2px solid rgba(134, 102, 165, 0.3)',
+                      boxShadow: '0 8px 32px rgba(134, 102, 165, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
                     }}
                   >
                     {item.number}
                   </div>
                 </motion.div>
 
-                {/* Category Badge - Simplified */}
+                {/* Category Badge - Top Right */}
                 <motion.div
-                  className="absolute top-4 md:top-8 right-4 md:right-8 z-20"
+                  className="absolute top-8 right-8 z-20"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : 20 }}
-                  transition={{ delay: 0.2 + index * 0.1 }}
+                  transition={{ delay: 0.3 + index * 0.1 }}
                 >
                   <div 
-                    className="px-3 md:px-5 py-1.5 md:py-2 rounded-full text-xs font-bold tracking-wider backdrop-blur-md"
+                    className="px-5 py-2 rounded-full text-xs font-bold tracking-wider backdrop-blur-md"
                     style={{
                       background: isSecond 
-                        ? 'rgba(255, 255, 255, 0.2)'
-                        : 'rgba(134, 102, 165, 0.9)',
+                        ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))'
+                        : 'linear-gradient(135deg, rgba(134, 102, 165, 0.9), rgba(157, 123, 184, 0.9))',
                       color: isSecond ? '#fff' : '#fff',
                       border: `1px solid ${isSecond ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.4)'}`,
+                      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
                     }}
                   >
                     {item.category.toUpperCase()}
@@ -417,153 +445,328 @@ const Portfolio = () => {
                 </motion.div>
 
                 {/* Giant Letter Overlay - Simplified for mobile */}
-                {!isMobile && (
+                {!mobile && (
                   <motion.div
                     className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
+                    style={{
+                      x: useTransform(smoothY, (value) => parallaxX * 2),
+                      y: useTransform(smoothY, (value) => parallaxY * 2),
+                    }}
                   >
                     <motion.span
-                      className="text-[30vw] md:text-[25vw] font-bold opacity-5 select-none"
+                      className="text-[30vw] font-bold opacity-5 select-none"
                       style={{
                         fontFamily: 'Playfair Display, serif',
                         WebkitTextStroke: isSecond ? '2px rgba(255, 255, 255, 0.1)' : '2px rgba(134, 102, 165, 0.1)',
                         color: 'transparent',
+                        background: isSecond 
+                          ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))'
+                          : 'linear-gradient(135deg, rgba(134, 102, 165, 0.1), rgba(134, 102, 165, 0.05))',
+                        WebkitBackgroundClip: 'text',
+                        backgroundClip: 'text',
+                        willChange: 'transform',
                       }}
-                      animate={hoveredCard === item.id ? {
-                        scale: 1.1,
-                        rotate: 5,
-                      } : {}}
-                      transition={{ duration: 0.5 }}
+                      animate={{
+                        scale: hoveredCard === item.id ? 1.1 : 1,
+                        rotate: hoveredCard === item.id ? 5 : 0,
+                      }}
+                      transition={{ duration: 0.5, ease: "easeOut" }}
                     >
                       {item.letter}
                     </motion.span>
                   </motion.div>
                 )}
 
-                {/* Decorative Text Elements - Only on desktop, simplified */}
-                {!isMobile && index === 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: isVisible ? 0.9 : 0, x: isVisible ? 0 : 30 }}
-                    transition={{ delay: 0.5 }}
-                    className="absolute top-24 md:top-32 right-8 md:right-16 text-right pointer-events-none z-15"
-                  >
-                    <p className="text-[#8666A5] text-3xl md:text-6xl font-bold leading-tight" style={{ fontFamily: 'Brush Script MT, cursive' }}>
-                      Red Carpet
-                    </p>
-                  </motion.div>
+                {/* Decorative Text Elements - Enhanced & Coordinated */}
+                {index === 0 && (
+                  <>
+                    {/* Card 1: Cannes - Top Right Corner */}
+                    <motion.div
+                      initial={{ opacity: 0, x: 30, y: -20 }}
+                      animate={{ opacity: isVisible ? 0.9 : 0, x: isVisible ? 0 : 30, y: isVisible ? 0 : -20 }}
+                      transition={{ delay: 0.5, type: "spring" }}
+                      className="absolute top-32 right-16 text-right pointer-events-none z-15"
+                    >
+                      <div className="relative">
+                        <p className="text-[#8666A5] text-6xl font-bold mb-3 leading-tight" style={{ fontFamily: 'Brush Script MT, cursive', textShadow: '2px 2px 4px rgba(255,255,255,0.5)' }}>
+                          Red Carpet
+                        </p>
+                        <div className="w-24 h-1 bg-[#8666A5] ml-auto mb-2" />
+                        <p className="text-[#6b4d7a] text-lg font-black tracking-[0.3em]" style={{ fontFamily: 'Courier New, monospace' }}>
+                          FESTIVAL 2024
+                        </p>
+                      </div>
+                    </motion.div>
+                    
+                    {/* Left Side Vertical Text */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : -30 }}
+                      transition={{ delay: 0.7, type: "spring" }}
+                      className="absolute left-8 top-1/2 -translate-y-1/2 pointer-events-none z-15"
+                      style={{
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'mixed'
+                      }}
+                    >
+                      <p className="text-[#8666A5] text-2xl font-black tracking-[0.3em] mb-4" style={{ fontFamily: 'Impact, sans-serif', textShadow: '2px 2px 4px rgba(255,255,255,0.5)' }}>
+                        CANNES
+                      </p>
+                      <div className="w-1 h-12 bg-[#8666A5] mx-auto mb-4" />
+                      <p className="text-[#6b4d7a] text-lg font-bold tracking-[0.2em]" style={{ fontFamily: 'Futura, sans-serif' }}>
+                        2024
+                      </p>
+                    </motion.div>
+                  </>
                 )}
 
-                {!isMobile && index === 1 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : 30 }}
-                    transition={{ delay: 0.5 }}
-                    className="absolute top-24 md:top-32 right-8 md:right-16 text-right pointer-events-none z-15"
-                  >
-                    <p className="text-white text-3xl md:text-6xl font-light leading-none" style={{ fontFamily: 'Optima, sans-serif' }}>
-                      Luxury
-                    </p>
-                  </motion.div>
+                {index === 1 && (
+                  <>
+                    {/* Card 2: Jewelry - Top Right Horizontal */}
+                    <motion.div
+                      initial={{ opacity: 0, x: 30, y: -20 }}
+                      animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : 30, y: isVisible ? 0 : -20 }}
+                      transition={{ delay: 0.5, type: "spring" }}
+                      className="absolute top-32 right-16 text-right pointer-events-none z-15"
+                    >
+                      <div className="relative">
+                        <p className="text-white text-6xl font-light leading-none mb-3" style={{ fontFamily: 'Optima, sans-serif', textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
+                          Luxury
+                        </p>
+                        <div className="w-24 h-1 bg-white/80 ml-auto mb-2" />
+                        <p className="text-white/90 text-lg font-bold tracking-[0.3em]" style={{ fontFamily: 'Didot, serif' }}>
+                          JEWELRY LINE
+                        </p>
+                      </div>
+                    </motion.div>
+                    
+                    {/* Left Side Vertical Badge */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : -30 }}
+                      transition={{ delay: 0.7, type: "spring" }}
+                      className="absolute left-8 top-1/2 -translate-y-1/2 pointer-events-none z-15"
+                      style={{
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'mixed'
+                      }}
+                    >
+                      <p className="text-white text-2xl font-black tracking-[0.3em] mb-4" style={{ fontFamily: 'Impact, sans-serif', textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
+                        CELEBRITY
+                      </p>
+                      <div className="w-1 h-12 bg-white/80 mx-auto mb-4" />
+                      <p className="text-white/90 text-lg font-bold tracking-[0.2em]" style={{ fontFamily: 'Futura, sans-serif' }}>
+                        ELITE
+                      </p>
+                    </motion.div>
+                  </>
                 )}
 
-                {!isMobile && index === 2 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : 30 }}
-                    transition={{ delay: 0.5 }}
-                    className="absolute top-24 md:top-32 right-8 md:right-16 text-right pointer-events-none z-15"
-                  >
-                    <p className="text-[#8666A5] text-3xl md:text-6xl font-black leading-none" style={{ fontFamily: 'Impact, sans-serif' }}>
-                      Hollywood
-                    </p>
-                  </motion.div>
+                {index === 2 && (
+                  <>
+                    {/* Card 3: Commercial - Top Right Horizontal */}
+                    <motion.div
+                      initial={{ opacity: 0, x: 30, y: -20 }}
+                      animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : 30, y: isVisible ? 0 : -20 }}
+                      transition={{ delay: 0.5, type: "spring" }}
+                      className="absolute top-32 right-16 text-right pointer-events-none z-15"
+                    >
+                      <div className="relative">
+                        <p className="text-[#8666A5] text-6xl font-black leading-none mb-3" style={{ fontFamily: 'Impact, sans-serif', textShadow: '2px 2px 4px rgba(255,255,255,0.5)' }}>
+                          Hollywood
+                        </p>
+                        <div className="w-24 h-1 bg-[#8666A5] ml-auto mb-2" />
+                        <p className="text-[#6b4d7a] text-lg font-black tracking-[0.3em]" style={{ fontFamily: 'Futura, sans-serif' }}>
+                          BLOCKBUSTER
+                        </p>
+                      </div>
+                    </motion.div>
+                    
+                    {/* Right Side Vertical Badge */}
+                    <motion.div
+                      initial={{ opacity: 0, x: 30 }}
+                      animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : 30 }}
+                      transition={{ delay: 0.7, type: "spring" }}
+                      className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none z-15"
+                      style={{
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'mixed'
+                      }}
+                    >
+                      <p className="text-[#8666A5] text-2xl font-black tracking-[0.3em] mb-4" style={{ fontFamily: 'Impact, sans-serif', textShadow: '2px 2px 4px rgba(255,255,255,0.5)' }}>
+                        CINEMA
+                      </p>
+                      <div className="w-1 h-12 bg-[#8666A5] mx-auto mb-4" />
+                      <p className="text-[#6b4d7a] text-lg font-bold tracking-[0.2em]" style={{ fontFamily: 'Futura, sans-serif' }}>
+                        850M
+                      </p>
+                    </motion.div>
+                  </>
                 )}
 
-                {!isMobile && index === 3 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : 30 }}
-                    transition={{ delay: 0.5 }}
-                    className="absolute top-24 md:top-32 right-8 md:right-16 text-right pointer-events-none z-15"
-                  >
-                    <p className="text-[#8666A5] text-3xl md:text-6xl font-bold leading-none" style={{ fontFamily: 'Baskerville, serif', fontStyle: 'italic' }}>
-                      Star-Studded
-                    </p>
-                  </motion.div>
+                {index === 3 && (
+                  <>
+                    {/* Card 4: Gala - Top Right Horizontal */}
+                    <motion.div
+                      initial={{ opacity: 0, x: 30, y: -20 }}
+                      animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : 30, y: isVisible ? 0 : -20 }}
+                      transition={{ delay: 0.5, type: "spring" }}
+                      className="absolute top-32 right-16 text-right pointer-events-none z-15"
+                    >
+                      <div className="relative">
+                        <p className="text-[#8666A5] text-6xl font-bold leading-none mb-3" style={{ fontFamily: 'Baskerville, serif', fontStyle: 'italic', textShadow: '2px 2px 4px rgba(255,255,255,0.5)' }}>
+                          Star-Studded
+                        </p>
+                        <div className="w-24 h-1 bg-[#8666A5] ml-auto mb-2" />
+                        <p className="text-[#6b4d7a] text-lg font-bold tracking-[0.2em]" style={{ fontFamily: 'Garamond, serif' }}>
+                          GALA EVENT
+                        </p>
+                      </div>
+                    </motion.div>
+                    
+                    {/* Left Side Vertical Badge */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : -30 }}
+                      transition={{ delay: 0.7, type: "spring" }}
+                      className="absolute left-8 top-1/2 -translate-y-1/2 pointer-events-none z-15"
+                      style={{
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'mixed'
+                      }}
+                    >
+                      <p className="text-[#8666A5] text-2xl font-black tracking-[0.3em] mb-4" style={{ fontFamily: 'Impact, sans-serif', textShadow: '2px 2px 4px rgba(255,255,255,0.5)' }}>
+                        CHARITY
+                      </p>
+                      <div className="w-1 h-12 bg-[#8666A5] mx-auto mb-4" />
+                      <p className="text-[#6b4d7a] text-lg font-bold tracking-[0.2em]" style={{ fontFamily: 'Century Gothic, sans-serif' }}>
+                        45+ VIP
+                      </p>
+                    </motion.div>
+                  </>
                 )}
 
-                {/* Image - OPTIMIZED */}
+                {/* Image with particles - OPTIMIZED POSITIONING */}
                 <motion.div
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-12"
                   style={{
-                    width: isMobile ? '75%' : (index === 1 ? '55%' : index === 2 ? '50%' : '52%'),
-                    height: isMobile ? '50%' : (index === 1 ? '60%' : index === 2 ? '55%' : '58%'),
+                    width: mobile ? '70%' : (index === 1 ? '55%' : index === 2 ? '50%' : '52%'),
+                    height: mobile ? '55%' : (index === 1 ? '60%' : index === 2 ? '55%' : '58%'),
+                    x: !mobile ? useTransform(smoothY, (value) => -parallaxX * 0.5) : 0,
+                    y: !mobile ? useTransform(smoothY, (value) => -parallaxY * 0.5) : 0,
+                    willChange: mobile ? 'auto' : 'transform',
                   }}
-                  animate={!isMobile && hoveredCard === item.id ? {
-                    scale: 1.05,
+                  animate={!mobile ? {
+                    scale: hoveredCard === item.id ? 1.08 : 1,
+                    rotateY: hoveredCard === item.id ? 5 : 0,
+                    rotateX: hoveredCard === item.id ? -5 : 0,
                   } : {}}
-                  transition={{ duration: 0.4 }}
+                  transition={{ duration: mobile ? 0.3 : 0.6, ease: "easeOut" }}
                 >
-                  {/* Simplified shadow */}
+                  {/* Enhanced Multi-layer shadow */}
                   <div 
-                    className="absolute inset-0 rounded-2xl md:rounded-3xl pointer-events-none"
+                    className="absolute inset-0 rounded-3xl pointer-events-none"
                     style={{
-                      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
-                      border: '2px solid rgba(255, 255, 255, 0.2)',
+                      boxShadow: `
+                        0 30px 80px rgba(0, 0, 0, 0.4),
+                        0 10px 30px rgba(0, 0, 0, 0.3),
+                        0 0 0 1px rgba(255, 255, 255, 0.15),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2)
+                      `,
+                      border: '4px solid rgba(255, 255, 255, 0.3)',
                       zIndex: 5,
                     }}
                   />
 
+                  {/* Refined vignette overlay */}
+                  <div 
+                    className="absolute inset-0 rounded-3xl pointer-events-none z-10"
+                    style={{
+                      background: isSecond 
+                        ? 'radial-gradient(ellipse at center, transparent 35%, rgba(61, 79, 81, 0.15) 75%, rgba(61, 79, 81, 0.35) 100%)'
+                        : 'radial-gradient(ellipse at center, transparent 35%, rgba(134, 102, 165, 0.1) 75%, rgba(134, 102, 165, 0.25) 100%)',
+                      mixBlendMode: 'multiply',
+                    }}
+                  />
+
+                  {/* Corner accent lines */}
+                  <div className="absolute top-0 left-0 w-12 h-12 pointer-events-none z-20">
+                    <div className="absolute top-3 left-3 w-8 h-1 bg-white/40 rounded" />
+                    <div className="absolute top-3 left-3 w-1 h-8 bg-white/40 rounded" />
+                  </div>
+                  <div className="absolute bottom-0 right-0 w-12 h-12 pointer-events-none z-20">
+                    <div className="absolute bottom-3 right-3 w-8 h-1 bg-white/40 rounded" />
+                    <div className="absolute bottom-3 right-3 w-1 h-8 bg-white/40 rounded" />
+                  </div>
+
                   <ImageWithFallback
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover rounded-2xl md:rounded-3xl"
-                    priority={index === 0}
+                    className="w-full h-full object-cover rounded-3xl"
                   />
 
-                  {/* Reduced particles for mobile */}
-                  {!isMobile && [...Array(6)].map((_, i) => (
+                  {/* Enhanced floating particles - Reduced for mobile */}
+                  {!mobile && [...Array(6)].map((_, i) => (
                     <motion.div
                       key={i}
                       className="absolute rounded-full"
                       style={{
                         background: isSecond ? 'rgba(255, 255, 255, 0.4)' : 'rgba(134, 102, 165, 0.4)',
-                        width: `${Math.random() * 4 + 2}px`,
-                        height: `${Math.random() * 4 + 2}px`,
+                        width: `${Math.random() * 5 + 2}px`,
+                        height: `${Math.random() * 5 + 2}px`,
                         left: `${Math.random() * 100}%`,
                         top: `${Math.random() * 100}%`,
                         filter: 'blur(1px)',
+                        boxShadow: `0 0 ${Math.random() * 8 + 4}px ${isSecond ? 'rgba(255, 255, 255, 0.2)' : 'rgba(134, 102, 165, 0.2)'}`,
+                        willChange: 'transform, opacity',
                       }}
                       animate={{
                         y: [0, -20, 0],
+                        x: [0, Math.random() * 15 - 7.5, 0],
                         opacity: [0.3, 0.7, 0.3],
+                        scale: [1, 1.3, 1],
                       }}
                       transition={{
-                        duration: 2 + Math.random() * 2,
+                        duration: 4 + Math.random() * 2,
                         repeat: Infinity,
                         delay: Math.random() * 2,
+                        ease: "easeInOut",
                       }}
                     />
                   ))}
                 </motion.div>
 
-                {/* Content - Third card only - Mobile friendly */}
-                {index === 2 && !isMobile && (
+                {/* Content - Third card only - VERTICAL */}
+                {index === 2 && (
                   <motion.div
-                    className="absolute bottom-8 md:bottom-12 left-8 md:left-12 z-20"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: isVisible ? 1 : 0 }}
-                    transition={{ delay: 0.8 }}
+                    className="absolute bottom-12 left-12 z-20"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ 
+                      opacity: isVisible ? 1 : 0, 
+                      x: isVisible ? 0 : -20 
+                    }}
+                    transition={{ delay: 0.8 + index * 0.1 }}
+                    style={{
+                      writingMode: 'vertical-rl',
+                      textOrientation: 'mixed'
+                    }}
                   >
-                    <h3 className="text-[#8666A5] text-2xl md:text-3xl font-bold" style={{ fontFamily: 'Impact, sans-serif' }}>
+                    <p className="text-[#6b4d7a] text-lg font-black tracking-[0.3em] mb-3" style={{ fontFamily: 'Arial, sans-serif', textShadow: '2px 2px 4px rgba(255,255,255,0.5)' }}>
+                      PRODUCT PLACEMENT
+                    </p>
+                    <div className="w-1 h-16 bg-[#8666A5] mx-auto mb-3" />
+                    <h3 className="text-[#8666A5] text-3xl font-bold mb-2" style={{ fontFamily: 'Impact, sans-serif', textShadow: '2px 2px 4px rgba(255,255,255,0.5)' }}>
                       COMMERCIAL
                     </h3>
+                    <p className="text-[#6b4d7a] text-2xl font-bold" style={{ fontFamily: 'Futura, sans-serif' }}>
+                      INTEGRATION
+                    </p>
                   </motion.div>
                 )}
 
-                {/* Hover Overlay - Desktop only */}
+                {/* Hover Overlay */}
                 <AnimatePresence>
-                  {!isMobile && hoveredCard === item.id && (
+                  {hoveredCard === item.id && (
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -670,47 +873,45 @@ const Portfolio = () => {
         </div>
       </div>
 
-      {/* Stats Section - Simplified */}
+      {/* Stats Section - Compact Modern Design */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.5 }}
-        className="relative z-10 max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12"
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="relative z-10 max-w-5xl mx-auto px-8 py-12"
       >
         <div className="relative">
-          {/* Simplified background glow - desktop only */}
-          {!isMobile && (
-            <div className="absolute inset-0 pointer-events-none">
-              <motion.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[200px] rounded-full"
-                style={{
-                  background: 'radial-gradient(circle, rgba(134, 102, 165, 0.06) 0%, transparent 70%)',
-                  filter: 'blur(40px)',
-                }}
-                animate={{
-                  scale: [1, 1.1, 1],
-                  opacity: [0.3, 0.5, 0.3],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-            </div>
-          )}
+          {/* Subtle background glow */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <motion.div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[300px] rounded-full"
+              style={{
+                background: 'radial-gradient(circle, rgba(134, 102, 165, 0.08) 0%, transparent 70%)',
+                filter: 'blur(50px)',
+              }}
+              animate={{
+                scale: [1, 1.15, 1],
+                opacity: [0.4, 0.6, 0.4],
+              }}
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          </div>
 
           {/* Compact Title */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="text-center mb-6 md:mb-8"
+            transition={{ duration: 0.5 }}
+            className="text-center mb-8"
           >
             <h3 
-              className="text-2xl md:text-4xl font-bold text-[#8666A5] mb-2 md:mb-3" 
+              className="text-3xl md:text-4xl font-bold text-[#8666A5] mb-3" 
               style={{ fontFamily: 'Playfair Display, serif' }}
             >
               Our Impact
@@ -719,13 +920,13 @@ const Portfolio = () => {
               initial={{ width: 0 }}
               whileInView={{ width: 60 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
               className="h-0.5 bg-gradient-to-r from-transparent via-[#8666A5] to-transparent mx-auto"
             />
           </motion.div>
           
           {/* Compact Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
             {[
               { value: "500+", label: "Campaigns", icon: Target },
               { value: "2B+", label: "Impressions", icon: Eye },
@@ -736,11 +937,11 @@ const Portfolio = () => {
               return (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.05, duration: 0.4 }}
-                  whileHover={!isMobile ? { 
+                  transition={{ delay: mobile ? i * 0.05 : i * 0.1, duration: mobile ? 0.3 : 0.5, type: "spring", stiffness: mobile ? 200 : 150 }}
+                  whileHover={!mobile ? { 
                     y: -6, 
                     scale: 1.03,
                     transition: { duration: 0.2 } 
@@ -749,27 +950,47 @@ const Portfolio = () => {
                 >
                   {/* Card Container */}
                   <div 
-                    className="relative p-4 md:p-5 rounded-xl md:rounded-2xl backdrop-blur-md overflow-hidden"
+                    className="relative p-5 rounded-2xl backdrop-blur-md overflow-hidden"
                     style={{
                       background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',
                       border: '1px solid rgba(134, 102, 165, 0.2)',
-                      boxShadow: '0 4px 20px rgba(134, 102, 165, 0.12)',
+                      boxShadow: '0 4px 20px rgba(134, 102, 165, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
                     }}
                   >
+                    {/* Gradient overlay on hover */}
+                    <motion.div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(134, 102, 165, 0.05), rgba(179, 157, 219, 0.05))',
+                      }}
+                    />
+
                     {/* Content */}
                     <div className="relative z-10 text-center">
-                      {/* Icon - Simplified animation */}
-                      <div className="flex items-center justify-center mb-1.5 md:mb-2">
+                      {/* Icon */}
+                      <motion.div
+                        className="flex items-center justify-center mb-2"
+                        animate={!mobile ? { 
+                          y: [0, -3, 0],
+                          rotate: [0, 5, -5, 0]
+                        } : {}}
+                        transition={!mobile ? { 
+                          duration: 2,
+                          repeat: Infinity,
+                          repeatDelay: 3,
+                          delay: i * 0.2
+                        } : {}}
+                      >
                         <IconComponent 
-                          className="w-5 h-5 md:w-7 md:h-7"
+                          className="w-6 h-6 md:w-7 md:h-7"
                           style={{ color: '#8666A5' }}
                           strokeWidth={2}
                         />
-                      </div>
+                      </motion.div>
 
                       {/* Value */}
-                      <div
-                        className="text-2xl md:text-4xl font-bold mb-1"
+                      <motion.div
+                        className="text-3xl md:text-4xl font-bold mb-1"
                         style={{ 
                           fontFamily: 'Playfair Display, serif',
                           background: 'linear-gradient(135deg, #8666A5, #b39ddb)',
@@ -777,16 +998,52 @@ const Portfolio = () => {
                           WebkitTextFillColor: 'transparent',
                           backgroundClip: 'text',
                         }}
+                        initial={{ scale: 0 }}
+                        whileInView={{ scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ 
+                          delay: i * 0.1 + 0.2, 
+                          type: "spring", 
+                          stiffness: 200
+                        }}
                       >
                         {stat.value}
-                      </div>
+                      </motion.div>
 
                       {/* Label */}
-                      <p className="text-xs md:text-sm font-semibold text-[#6b4d7a]">
+                      <motion.p
+                        className="text-xs md:text-sm font-semibold text-[#6b4d7a]"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 + 0.3 }}
+                      >
                         {stat.label}
-                      </p>
+                      </motion.p>
                     </div>
+
+                    {/* Shine effect on hover - Desktop only */}
+                    {!mobile && (
+                      <motion.div
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none"
+                        initial={{ x: '-100%' }}
+                        whileHover={{ x: '100%' }}
+                        transition={{ duration: 0.6 }}
+                        style={{
+                          background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)',
+                        }}
+                      />
+                    )}
                   </div>
+
+                  {/* Corner accent */}
+                  <div 
+                    className="absolute top-0 right-0 w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      background: 'linear-gradient(135deg, transparent 50%, rgba(134, 102, 165, 0.15) 50%)',
+                      borderTopRightRadius: '1rem',
+                    }}
+                  />
                 </motion.div>
               );
             })}
@@ -794,183 +1051,138 @@ const Portfolio = () => {
         </div>
       </motion.div>
 
-      {/* Modal - Optimized */}
+      {/* Modal */}
       <AnimatePresence>
         {activeCaseStudy && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
             style={{ 
               backgroundColor: 'rgba(0, 0, 0, 0.9)',
-              backdropFilter: isMobile ? 'none' : 'blur(10px)'
+              backdropFilter: 'blur(10px)'
             }}
             onClick={() => setActiveCaseStudy(null)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 200, damping: 25 }}
-              className="relative max-w-6xl w-full max-h-[95vh] md:max-h-[90vh] bg-[#d4c4c0] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl"
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="relative max-w-6xl w-full max-h-[90vh] bg-[#d4c4c0] rounded-3xl overflow-hidden shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
               <motion.button
-                whileHover={!isMobile ? { scale: 1.1, rotate: 90 } : {}}
+                whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
-                className="absolute top-3 right-3 md:top-6 md:right-6 z-50 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md shadow-lg"
+                className="absolute top-6 right-6 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md shadow-lg"
                 onClick={() => setActiveCaseStudy(null)}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8666A5" strokeWidth="2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8666A5" strokeWidth="2">
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </motion.button>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 h-full overflow-y-auto md:overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-2 h-full">
                 {/* Image Gallery */}
-                <div className="relative bg-[#3d4f51] flex items-center justify-center p-6 md:p-12 min-h-[300px] md:min-h-0">
+                <div className="relative bg-[#3d4f51] flex items-center justify-center p-12">
                   <AnimatePresence mode="wait" custom={imageDirection}>
                     <motion.div
                       key={currentImageIndex}
                       custom={imageDirection}
-                      initial={{ opacity: 0, x: imageDirection * 50 }}
+                      initial={{ opacity: 0, x: imageDirection * 100 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -imageDirection * 50 }}
-                      transition={{ duration: 0.3 }}
+                      exit={{ opacity: 0, x: -imageDirection * 100 }}
+                      transition={{ duration: 0.5 }}
                       className="w-full h-full flex items-center justify-center"
                     >
                       <ImageWithFallback
                         src={activeCaseStudy.gallery[currentImageIndex]}
                         alt={`${activeCaseStudy.title} - Image ${currentImageIndex + 1}`}
-                        className="max-w-full max-h-full object-contain rounded-xl md:rounded-2xl shadow-2xl"
+                        className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
                       />
                     </motion.div>
                   </AnimatePresence>
 
                   {/* Navigation Arrows */}
                   <motion.button
-                    whileHover={!isMobile ? { scale: 1.1, x: -5 } : {}}
+                    whileHover={{ scale: 1.1, x: -5 }}
                     whileTap={{ scale: 0.9 }}
-                    className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md shadow-lg"
+                    className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md shadow-lg"
                     onClick={prevImage}
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8666A5" strokeWidth="2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8666A5" strokeWidth="2">
                       <polyline points="15 18 9 12 15 6" />
                     </svg>
                   </motion.button>
 
                   <motion.button
-                    whileHover={!isMobile ? { scale: 1.1, x: 5 } : {}}
+                    whileHover={{ scale: 1.1, x: 5 }}
                     whileTap={{ scale: 0.9 }}
-                    className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md shadow-lg"
+                    className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md shadow-lg"
                     onClick={nextImage}
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8666A5" strokeWidth="2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8666A5" strokeWidth="2">
                       <polyline points="9 18 15 12 9 6" />
                     </svg>
                   </motion.button>
 
                   {/* Image Counter */}
-                  <div className="absolute bottom-3 md:bottom-6 left-1/2 -translate-x-1/2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-white/90 backdrop-blur-md text-xs md:text-sm font-semibold text-[#8666A5]">
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-white/90 backdrop-blur-md text-sm font-semibold text-[#8666A5]">
                     {currentImageIndex + 1} / {activeCaseStudy.gallery.length}
                   </div>
                 </div>
 
-                {/* Content - Redesigned with proper spacing */}
-                <div className="p-6 md:p-8 overflow-y-auto max-h-[60vh] md:max-h-full">
+                {/* Content */}
+                <div className="p-12 overflow-y-auto">
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="space-y-6 md:space-y-8"
+                    transition={{ delay: 0.2 }}
                   >
-                    {/* Header Section */}
-                    <div className="space-y-4">
-                      <span className="inline-block px-4 py-2 rounded-full text-xs md:text-sm font-bold bg-[#8666A5] text-white shadow-md">
-                        {activeCaseStudy.category}
-                      </span>
+                    <span className="inline-block px-4 py-2 rounded-full text-sm font-semibold mb-6 bg-[#8666A5] text-white">
+                      {activeCaseStudy.category}
+                    </span>
 
-                      <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-[#8666A5] leading-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
-                        {activeCaseStudy.title}
-                      </h2>
+                    <h2 className="text-5xl font-bold text-[#8666A5] mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
+                      {activeCaseStudy.title}
+                    </h2>
 
-                      <div className="flex items-center gap-2 text-base md:text-lg text-[#6b4d7a]">
-                        <svg className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-                        </svg>
-                        <span className="font-semibold">{activeCaseStudy.client}</span>
-                      </div>
+                    <p className="text-xl text-[#6b4d7a] mb-8">
+                      {activeCaseStudy.client}
+                    </p>
 
-                      <div className="w-20 h-1 bg-gradient-to-r from-[#8666A5] to-[#b39ddb] rounded-full" />
+                    <div className="w-20 h-1 bg-[#8666A5] mb-8" />
+
+                    <p className="text-lg text-[#6b4d7a] leading-relaxed mb-12">
+                      {activeCaseStudy.description}
+                    </p>
+
+                    <h3 className="text-2xl font-bold text-[#8666A5] mb-6">
+                      Campaign Results
+                    </h3>
+
+                    <div className="space-y-6">
+                      {activeCaseStudy.results.map((result, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.3 + i * 0.1 }}
+                          className="flex justify-between items-center p-4 rounded-xl bg-white/50"
+                        >
+                          <span className="text-lg text-[#6b4d7a]">
+                            {result.label}
+                          </span>
+                          <span className="text-3xl font-bold text-[#8666A5]" style={{ fontFamily: 'Playfair Display, serif' }}>
+                            {result.value}
+                          </span>
+                        </motion.div>
+                      ))}
                     </div>
-
-                    {/* Description */}
-                    <div className="bg-gradient-to-br from-white/60 to-white/40 backdrop-blur-sm rounded-2xl p-4 md:p-6 border border-[#8666A5]/10">
-                      <p className="text-sm md:text-base lg:text-lg text-[#6b4d7a] leading-relaxed">
-                        {activeCaseStudy.description}
-                      </p>
-                    </div>
-
-                    {/* Campaign Results Section */}
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8666A5] to-[#b39ddb] flex items-center justify-center shadow-lg">
-                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                          </svg>
-                        </div>
-                        <h3 className="text-xl md:text-2xl font-bold text-[#8666A5]" style={{ fontFamily: 'Playfair Display, serif' }}>
-                          Campaign Results
-                        </h3>
-                      </div>
-
-                      {/* Results Cards Grid */}
-                      <div className="grid grid-cols-1 gap-3 md:gap-4">
-                        {activeCaseStudy.results.map((result, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.2 + i * 0.1 }}
-                            className="group relative overflow-hidden"
-                          >
-                            <div className="relative bg-gradient-to-br from-white to-white/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-[#8666A5]/20 shadow-md hover:shadow-xl transition-all duration-300">
-                              {/* Gradient overlay on hover */}
-                              <div className="absolute inset-0 bg-gradient-to-br from-[#8666A5]/5 to-[#b39ddb]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl md:rounded-2xl" />
-                              
-                              <div className="relative flex items-center justify-between gap-4">
-                                <div className="flex-1">
-                                  <p className="text-xs md:text-sm font-semibold text-[#8666A5]/60 uppercase tracking-wider mb-1">
-                                    {result.label}
-                                  </p>
-                                  <div className="flex items-baseline gap-2">
-                                    <span className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#8666A5] to-[#b39ddb] bg-clip-text text-transparent" style={{ fontFamily: 'Playfair Display, serif' }}>
-                                      {result.value}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                {/* Icon indicator */}
-                                <div className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-[#8666A5]/10 to-[#b39ddb]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                  <svg className="w-6 h-6 md:w-7 md:h-7 text-[#8666A5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                  </svg>
-                                </div>
-                              </div>
-
-                              {/* Bottom accent line */}
-                              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8666A5] via-[#b39ddb] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Bottom padding for mobile scroll */}
-                    <div className="h-4 md:h-0" />
                   </motion.div>
                 </div>
               </div>
