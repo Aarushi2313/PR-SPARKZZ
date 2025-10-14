@@ -547,121 +547,19 @@ const Portfolio = () => {
                   ))}
                 </motion.div>
 
-                {/* Professional Content Card - ALL CARDS */}
-                <motion.div
-                  className="absolute bottom-4 md:bottom-8 left-4 right-4 md:left-8 md:right-8 z-20 pointer-events-none"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
-                  transition={{ delay: 0.5 + index * 0.1 }}
-                >
-                  <div 
-                    className="backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-2xl"
-                    style={{
-                      background: isSecond 
-                        ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08))'
-                        : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85))',
-                      border: `1px solid ${isSecond ? 'rgba(255, 255, 255, 0.25)' : 'rgba(134, 102, 165, 0.2)'}`,
-                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
-                    }}
+                {/* Content - Third card only - Mobile friendly */}
+                {index === 2 && !isMobile && (
+                  <motion.div
+                    className="absolute bottom-8 md:bottom-12 left-8 md:left-12 z-20"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isVisible ? 1 : 0 }}
+                    transition={{ delay: 0.8 }}
                   >
-                    {/* Category Badge */}
-                    <div className="flex items-center justify-between mb-3 md:mb-4">
-                      <span 
-                        className="text-xs md:text-sm font-bold tracking-wider uppercase"
-                        style={{ 
-                          color: isSecond ? '#fff' : '#8666A5',
-                        }}
-                      >
-                        {item.category}
-                      </span>
-                      <span 
-                        className="text-xs md:text-sm font-semibold"
-                        style={{ 
-                          color: isSecond ? 'rgba(255, 255, 255, 0.8)' : '#6b4d7a',
-                        }}
-                      >
-                        {item.client}
-                      </span>
-                    </div>
-
-                    {/* Title */}
-                    <h3 
-                      className="text-xl md:text-3xl lg:text-4xl font-bold mb-2 md:mb-3 leading-tight"
-                      style={{ 
-                        fontFamily: 'Playfair Display, serif',
-                        color: isSecond ? '#fff' : '#8666A5',
-                      }}
-                    >
-                      {item.title}
+                    <h3 className="text-[#8666A5] text-2xl md:text-3xl font-bold" style={{ fontFamily: 'Impact, sans-serif' }}>
+                      COMMERCIAL
                     </h3>
-
-                    {/* Description */}
-                    <p 
-                      className="text-sm md:text-base lg:text-lg mb-4 md:mb-6 leading-relaxed line-clamp-2"
-                      style={{ 
-                        color: isSecond ? 'rgba(255, 255, 255, 0.9)' : '#6b4d7a',
-                      }}
-                    >
-                      {item.description}
-                    </p>
-
-                    {/* Results Grid */}
-                    <div className="grid grid-cols-3 gap-2 md:gap-4">
-                      {item.results.map((result, i) => (
-                        <div key={i} className="text-center">
-                          <div 
-                            className="text-lg md:text-2xl lg:text-3xl font-bold mb-0.5 md:mb-1"
-                            style={{ 
-                              fontFamily: 'Playfair Display, serif',
-                              color: isSecond ? '#fff' : '#8666A5',
-                            }}
-                          >
-                            {result.value}
-                          </div>
-                          <div 
-                            className="text-xs md:text-sm font-medium"
-                            style={{ 
-                              color: isSecond ? 'rgba(255, 255, 255, 0.8)' : '#6b4d7a',
-                            }}
-                          >
-                            {result.label}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* View More Indicator */}
-                    <motion.div
-                      className="flex items-center justify-center gap-2 mt-4 md:mt-6 pt-4 border-t"
-                      style={{
-                        borderColor: isSecond ? 'rgba(255, 255, 255, 0.2)' : 'rgba(134, 102, 165, 0.2)',
-                      }}
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <span 
-                        className="text-xs md:text-sm font-semibold"
-                        style={{ 
-                          color: isSecond ? '#fff' : '#8666A5',
-                        }}
-                      >
-                        View Full Case Study
-                      </span>
-                      <svg 
-                        width="16" 
-                        height="16" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2"
-                        style={{ color: isSecond ? '#fff' : '#8666A5' }}
-                      >
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                        <polyline points="12 5 19 12 12 19" />
-                      </svg>
-                    </motion.div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                )}
 
                 {/* Hover Overlay - Desktop only */}
                 <AnimatePresence>
@@ -981,53 +879,98 @@ const Portfolio = () => {
                   </div>
                 </div>
 
-                {/* Content */}
-                <div className="p-6 md:p-12 overflow-y-auto">
+                {/* Content - Redesigned with proper spacing */}
+                <div className="p-6 md:p-8 overflow-y-auto max-h-[60vh] md:max-h-full">
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
+                    className="space-y-6 md:space-y-8"
                   >
-                    <span className="inline-block px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs font-semibold mb-4 md:mb-6 bg-[#8666A5] text-white">
-                      {activeCaseStudy.category}
-                    </span>
+                    {/* Header Section */}
+                    <div className="space-y-4">
+                      <span className="inline-block px-4 py-2 rounded-full text-xs md:text-sm font-bold bg-[#8666A5] text-white shadow-md">
+                        {activeCaseStudy.category}
+                      </span>
 
-                    <h2 className="text-3xl md:text-5xl font-bold text-[#8666A5] mb-3 md:mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
-                      {activeCaseStudy.title}
-                    </h2>
+                      <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-[#8666A5] leading-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
+                        {activeCaseStudy.title}
+                      </h2>
 
-                    <p className="text-lg md:text-xl text-[#6b4d7a] mb-6 md:mb-8">
-                      {activeCaseStudy.client}
-                    </p>
+                      <div className="flex items-center gap-2 text-base md:text-lg text-[#6b4d7a]">
+                        <svg className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                        </svg>
+                        <span className="font-semibold">{activeCaseStudy.client}</span>
+                      </div>
 
-                    <div className="w-16 md:w-20 h-1 bg-[#8666A5] mb-6 md:mb-8" />
-
-                    <p className="text-base md:text-lg text-[#6b4d7a] leading-relaxed mb-8 md:mb-12">
-                      {activeCaseStudy.description}
-                    </p>
-
-                    <h3 className="text-xl md:text-2xl font-bold text-[#8666A5] mb-4 md:mb-6">
-                      Campaign Results
-                    </h3>
-
-                    <div className="space-y-4 md:space-y-6">
-                      {activeCaseStudy.results.map((result, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.2 + i * 0.05 }}
-                          className="flex justify-between items-center p-3 md:p-4 rounded-xl bg-white/50"
-                        >
-                          <span className="text-base md:text-lg text-[#6b4d7a]">
-                            {result.label}
-                          </span>
-                          <span className="text-2xl md:text-3xl font-bold text-[#8666A5]" style={{ fontFamily: 'Playfair Display, serif' }}>
-                            {result.value}
-                          </span>
-                        </motion.div>
-                      ))}
+                      <div className="w-20 h-1 bg-gradient-to-r from-[#8666A5] to-[#b39ddb] rounded-full" />
                     </div>
+
+                    {/* Description */}
+                    <div className="bg-gradient-to-br from-white/60 to-white/40 backdrop-blur-sm rounded-2xl p-4 md:p-6 border border-[#8666A5]/10">
+                      <p className="text-sm md:text-base lg:text-lg text-[#6b4d7a] leading-relaxed">
+                        {activeCaseStudy.description}
+                      </p>
+                    </div>
+
+                    {/* Campaign Results Section */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8666A5] to-[#b39ddb] flex items-center justify-center shadow-lg">
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                        </div>
+                        <h3 className="text-xl md:text-2xl font-bold text-[#8666A5]" style={{ fontFamily: 'Playfair Display, serif' }}>
+                          Campaign Results
+                        </h3>
+                      </div>
+
+                      {/* Results Cards Grid */}
+                      <div className="grid grid-cols-1 gap-3 md:gap-4">
+                        {activeCaseStudy.results.map((result, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.2 + i * 0.1 }}
+                            className="group relative overflow-hidden"
+                          >
+                            <div className="relative bg-gradient-to-br from-white to-white/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-5 border border-[#8666A5]/20 shadow-md hover:shadow-xl transition-all duration-300">
+                              {/* Gradient overlay on hover */}
+                              <div className="absolute inset-0 bg-gradient-to-br from-[#8666A5]/5 to-[#b39ddb]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl md:rounded-2xl" />
+                              
+                              <div className="relative flex items-center justify-between gap-4">
+                                <div className="flex-1">
+                                  <p className="text-xs md:text-sm font-semibold text-[#8666A5]/60 uppercase tracking-wider mb-1">
+                                    {result.label}
+                                  </p>
+                                  <div className="flex items-baseline gap-2">
+                                    <span className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#8666A5] to-[#b39ddb] bg-clip-text text-transparent" style={{ fontFamily: 'Playfair Display, serif' }}>
+                                      {result.value}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Icon indicator */}
+                                <div className="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-[#8666A5]/10 to-[#b39ddb]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                  <svg className="w-6 h-6 md:w-7 md:h-7 text-[#8666A5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                  </svg>
+                                </div>
+                              </div>
+
+                              {/* Bottom accent line */}
+                              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8666A5] via-[#b39ddb] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Bottom padding for mobile scroll */}
+                    <div className="h-4 md:h-0" />
                   </motion.div>
                 </div>
               </div>
