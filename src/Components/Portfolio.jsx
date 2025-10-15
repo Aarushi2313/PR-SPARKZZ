@@ -20,6 +20,12 @@ const ImageWithFallback = ({ src, alt, className, eager = false }) => {
     setError(false);
   }, [src]);
 
+  const handleError = () => {
+    console.log('Image failed to load:', src);
+    setError(true);
+    setLoading(false);
+  };
+
   return (
     <div className="relative w-full h-full">
       {loading && !error && (
@@ -27,19 +33,29 @@ const ImageWithFallback = ({ src, alt, className, eager = false }) => {
           <div className="w-8 h-8 border-3 border-[#8666A5] border-t-transparent rounded-full animate-spin" />
         </div>
       )}
-      <img
-        src={imgSrc}
-        alt={alt}
-        className={className}
-        loading={eager ? "eager" : "lazy"}
-        onLoad={() => setLoading(false)}
-        onError={() => {
-          setError(true);
-          setLoading(false);
-          setImgSrc('/images/portfolio/placeholder.jpg');
-        }}
-        style={{ display: loading ? 'none' : 'block' }}
-      />
+      {error ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#8666A5] to-[#9d7bb8] text-white p-6">
+          <div className="w-16 h-16 mb-4 rounded-full bg-white/20 flex items-center justify-center">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </div>
+          <p className="text-sm font-semibold">Image Coming Soon</p>
+          <p className="text-xs opacity-80 mt-1 text-center">{alt}</p>
+        </div>
+      ) : (
+        <img
+          src={imgSrc}
+          alt={alt}
+          className={className}
+          loading={eager ? "eager" : "lazy"}
+          onLoad={() => setLoading(false)}
+          onError={handleError}
+          style={{ display: loading ? 'none' : 'block' }}
+        />
+      )}
     </div>
   );
 };
@@ -116,7 +132,7 @@ const Portfolio = () => {
     {
       id: 2,
       category: "Brand Launch",
-      title: "Celebrity Jewelry Line",
+      title: "Celebrity Jewellery Line",
       client: "Elite Accessories Co.",
       number: "02",
       letter: "O",
@@ -212,44 +228,183 @@ const Portfolio = () => {
     <motion.div
       ref={containerRef}
       id="portfolio"
-      className="relative min-h-screen bg-[#f5f0ed] overflow-hidden pt-32 md:pt-40"
+      className="relative min-h-screen overflow-hidden pt-32 md:pt-40"
+      style={{
+        background: 'linear-gradient(135deg, #faf5f0 0%, #f5e8ed 25%, #f0e8f5 50%, #e8edf5 75%, #f5f0ed 100%)'
+      }}
     >
-      {/* Refined Background Elements - Reduced for mobile */}
+      {/* Sophisticated Portfolio Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {!mobile && [...Array(6)].map((_, i) => (
+        {/* Floating Film Strip Frames */}
+        <AnimatePresence>
+          {isVisible && !mobile && [...Array(15)].map((_, i) => {
+            const size = Math.random() * 100 + 60;
+            const left = Math.random() * 100;
+            const top = Math.random() * 100;
+            const rotation = Math.random() * 40 - 20;
+            
+            return (
+              <motion.div
+                key={`frame-${i}`}
+                className="absolute border-4 shadow-lg"
+                style={{
+                  width: `${size}px`,
+                  height: `${size * 1.2}px`,
+                  left: `${left}%`,
+                  top: `${top}%`,
+                  rotate: rotation,
+                  borderColor: 'rgba(134, 102, 165, 0.15)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                  backdropFilter: 'blur(10px)',
+                }}
+                initial={{ 
+                  opacity: 0, 
+                  scale: 0,
+                  y: -50 
+                }}
+                animate={{ 
+                  opacity: [0.2, 0.35, 0.2],
+                  scale: 1,
+                  y: [0, -15, 0],
+                  rotate: [rotation, rotation + 5, rotation]
+                }}
+                transition={{
+                  delay: Math.random() * 1.5,
+                  duration: 6 + Math.random() * 4,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut"
+                }}
+              >
+                {/* Film strip holes */}
+                <div className="absolute -left-2 top-2 flex flex-col gap-2">
+                  {[...Array(3)].map((_, j) => (
+                    <div 
+                      key={j} 
+                      className="w-2 h-2 rounded-sm"
+                      style={{ backgroundColor: 'rgba(134, 102, 165, 0.3)' }}
+                    />
+                  ))}
+                </div>
+                <div className="absolute -right-2 top-2 flex flex-col gap-2">
+                  {[...Array(3)].map((_, j) => (
+                    <div 
+                      key={j} 
+                      className="w-2 h-2 rounded-sm"
+                      style={{ backgroundColor: 'rgba(134, 102, 165, 0.3)' }}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+
+        {/* Vintage Camera Aperture Circles */}
+        {!mobile && [...Array(8)].map((_, i) => (
           <motion.div
-            key={i}
-            className="absolute rounded-full"
+            key={`aperture-${i}`}
+            className="absolute rounded-full border-2"
             style={{
-              background: `radial-gradient(circle, rgba(134, 102, 165, 0.06) 0%, transparent 70%)`,
-              width: `${Math.random() * 300 + 150}px`,
-              height: `${Math.random() * 300 + 150}px`,
+              width: `${Math.random() * 80 + 40}px`,
+              height: `${Math.random() * 80 + 40}px`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              filter: 'blur(40px)',
-              willChange: 'transform',
+              borderColor: 'rgba(134, 102, 165, 0.12)',
+              background: 'radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%)',
             }}
             animate={{
-              x: [0, Math.random() * 50 - 25],
-              y: [0, Math.random() * 50 - 25],
-              scale: [1, 1.05, 1],
+              scale: [1, 1.15, 1],
+              opacity: [0.3, 0.5, 0.3],
+              rotate: [0, 180, 360]
             }}
             transition={{
-              duration: Math.random() * 15 + 10,
+              duration: 15 + Math.random() * 5,
               repeat: Infinity,
-              repeatType: 'reverse',
-              ease: 'easeInOut',
+              ease: 'linear',
+              delay: i * 0.5
             }}
           />
         ))}
-        
-        {/* Static grid overlay for mobile */}
+
+        {/* Spotlight Beams */}
+        <motion.div
+          className="absolute top-0 left-1/4 w-1 h-full"
+          style={{
+            background: 'linear-gradient(180deg, rgba(134, 102, 165, 0.08) 0%, transparent 50%, rgba(134, 102, 165, 0.05) 100%)',
+            filter: 'blur(30px)',
+            transformOrigin: 'top center',
+          }}
+          animate={{
+            opacity: [0.3, 0.6, 0.3],
+            scaleX: [1, 1.5, 1]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div
+          className="absolute top-0 right-1/4 w-1 h-full"
+          style={{
+            background: 'linear-gradient(180deg, rgba(179, 157, 219, 0.08) 0%, transparent 50%, rgba(179, 157, 219, 0.05) 100%)',
+            filter: 'blur(30px)',
+            transformOrigin: 'top center',
+          }}
+          animate={{
+            opacity: [0.4, 0.7, 0.4],
+            scaleX: [1, 1.5, 1]
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        />
+
+        {/* Animated Gradient Orbs - Portfolio Theme */}
+        <motion.div 
+          className="absolute -top-40 left-1/4 w-96 h-96 rounded-full blur-3xl"
+          style={{ background: 'radial-gradient(circle, rgba(134, 102, 165, 0.15) 0%, transparent 70%)' }}
+          animate={{ 
+            x: [-50, 50, -50],
+            y: [-30, 30, -30],
+            scale: [1, 1.15, 1],
+            opacity: [0.3, 0.5, 0.3]
+          }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div 
+          className="absolute top-1/2 right-1/4 w-80 h-80 rounded-full blur-3xl"
+          style={{ background: 'radial-gradient(circle, rgba(179, 157, 219, 0.12) 0%, transparent 70%)' }}
+          animate={{ 
+            x: [50, -50, 50],
+            y: [30, -30, 30],
+            scale: [1.1, 1, 1.1],
+            opacity: [0.4, 0.2, 0.4]
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div 
+          className="absolute -bottom-40 left-1/3 w-96 h-96 rounded-full blur-3xl"
+          style={{ background: 'radial-gradient(circle, rgba(199, 179, 229, 0.1) 0%, transparent 70%)' }}
+          animate={{ 
+            x: [30, -30, 30],
+            scale: [1, 1.2, 1],
+            opacity: [0.25, 0.45, 0.25]
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        />
+
+        {/* Subtle Grid Pattern */}
         <div 
           className="absolute inset-0" 
           style={{
-            backgroundImage: `linear-gradient(rgba(134, 102, 165, 0.02) 1px, transparent 1px),
-                             linear-gradient(90deg, rgba(134, 102, 165, 0.02) 1px, transparent 1px)`,
-            backgroundSize: mobile ? '40px 40px' : '50px 50px',
+            backgroundImage: `linear-gradient(rgba(134, 102, 165, 0.03) 1px, transparent 1px),
+                             linear-gradient(90deg, rgba(134, 102, 165, 0.03) 1px, transparent 1px)`,
+            backgroundSize: mobile ? '40px 40px' : '60px 60px',
           }}
         />
       </div>
@@ -259,99 +414,287 @@ const Portfolio = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : -20 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="relative z-10 pb-16 px-8"
+        className="relative z-10 pb-12 px-8"
       >
         <div className="max-w-7xl mx-auto">
+          {/* Floating Decorative Elements */}
+          {!mobile && (
+            <>
+              <motion.div
+                className="absolute top-5 left-10 opacity-15"
+                animate={{
+                  y: [0, -15, 0],
+                  rotate: [0, 10, 0]
+                }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <Star size={32} strokeWidth={1.5} className="text-[#8666A5]" />
+              </motion.div>
+              <motion.div
+                className="absolute top-10 right-20 opacity-15"
+                animate={{
+                  y: [0, 12, 0],
+                  rotate: [0, -10, 0]
+                }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              >
+                <Sparkles size={28} strokeWidth={1.5} className="text-[#b39ddb]" />
+              </motion.div>
+            </>
+          )}
+
           {/* Section Tag */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0.8 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex justify-center mb-8"
+            initial={{ opacity: 0, scale: 0.8, y: -10 }}
+            animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0.8, y: isVisible ? 0 : -10 }}
+            transition={{ duration: 0.6, delay: 0.3, type: "spring", stiffness: 150 }}
+            className="flex justify-center mb-6"
           >
             <div 
-              className="inline-flex items-center gap-3 px-6 py-3 rounded-full backdrop-blur-md"
+              className="group relative inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full backdrop-blur-md overflow-hidden cursor-default"
               style={{
-                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',
-                border: '1px solid rgba(134, 102, 165, 0.2)',
-                boxShadow: '0 8px 32px rgba(134, 102, 165, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8))',
+                border: '2px solid rgba(134, 102, 165, 0.25)',
+                boxShadow: '0 8px 32px rgba(134, 102, 165, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
               }}
             >
-              <div className="w-2 h-2 rounded-full bg-[#8666A5] animate-pulse" />
-              <span className="text-sm font-semibold tracking-wider uppercase text-[#8666A5]">
+              {/* Animated shine effect */}
+              <motion.div
+                className="absolute inset-0"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent)',
+                }}
+                animate={{
+                  x: ['-100%', '200%']
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  repeatDelay: 2,
+                  ease: "easeInOut"
+                }}
+              />
+              
+              <motion.div
+                animate={{
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 180, 360]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              >
+                <Target className="w-4 h-4 text-[#8666A5]" strokeWidth={2.5} />
+              </motion.div>
+              
+              <span className="relative z-10 text-xs font-bold tracking-[0.2em] uppercase text-[#8666A5]">
                 Portfolio
               </span>
+              
+              <motion.div
+                className="w-2 h-2 rounded-full bg-[#8666A5]"
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [1, 0.6, 1]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
             </div>
           </motion.div>
 
-          {/* Main Title */}
+          {/* Main Title with Enhanced Typography */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.8, delay: 0.4, type: "spring", stiffness: 80 }}
             className="text-center mb-6"
           >
-            <h2 
-              className="text-5xl md:text-7xl lg:text-8xl font-bold text-[#8666A5] mb-4 leading-tight"
+            <motion.h2 
+              className="relative inline-block text-4xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight"
               style={{ fontFamily: 'Playfair Display, serif' }}
             >
-              Featured Work
-            </h2>
+              {/* Gradient text with animation */}
+              <motion.span
+                className="bg-clip-text text-transparent"
+                style={{
+                  background: 'linear-gradient(135deg, #8666A5 0%, #b39ddb 50%, #8666A5 100%)',
+                  backgroundSize: '200% auto',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+                animate={{
+                  backgroundPosition: ['0% center', '100% center', '0% center']
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              >
+                Featured Work
+              </motion.span>
+              
+              {/* Decorative underline accent */}
+              <motion.div
+                className="absolute -bottom-1 left-0 right-0 h-2 opacity-20"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, #8666A5, transparent)',
+                  filter: 'blur(6px)'
+                }}
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: isVisible ? 1 : 0 }}
+                transition={{ duration: 1, delay: 0.8 }}
+              />
+            </motion.h2>
             
-            {/* Decorative Line */}
+            {/* Decorative Line with Animation */}
             <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: isVisible ? '120px' : 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="h-1 bg-gradient-to-r from-transparent via-[#8666A5] to-transparent mx-auto mb-8"
-            />
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isVisible ? 1 : 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
-              className="text-lg md:text-xl lg:text-2xl text-[#6b4d7a] max-w-4xl mx-auto leading-relaxed"
+              className="flex items-center justify-center gap-2 mb-5"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
             >
-              Showcasing our most impactful celebrity PR campaigns and brand partnerships
-            </motion.p>
+              <motion.div
+                className="h-0.5 bg-gradient-to-r from-transparent via-[#8666A5] to-[#b39ddb]"
+                initial={{ width: 0 }}
+                animate={{ width: isVisible ? '50px' : 0 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+              />
+              <motion.div
+                className="w-1.5 h-1.5 rounded-full bg-[#8666A5]"
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.5, 1, 0.5]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.div
+                className="h-0.5 bg-gradient-to-r from-[#b39ddb] via-[#8666A5] to-transparent"
+                initial={{ width: 0 }}
+                animate={{ width: isVisible ? '50px' : 0 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+              />
+            </motion.div>
+
+            {/* Enhanced Description */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 10 }}
+              transition={{ duration: 0.8, delay: 0.9 }}
+              className="max-w-3xl mx-auto"
+            >
+              <p className="text-base md:text-lg lg:text-xl text-[#6b4d7a] leading-relaxed">
+                Showcasing our most <span className="font-bold text-[#8666A5]">impactful celebrity PR campaigns</span> and <span className="font-bold text-[#8666A5]">brand partnerships</span>
+              </p>
+            </motion.div>
           </motion.div>
 
-          {/* Stats Highlights */}
+          {/* Enhanced Stats Highlights with Icons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="flex flex-wrap justify-center gap-8 mt-12"
+            transition={{ duration: 0.8, delay: 1 }}
+            className="flex flex-wrap justify-center gap-4 md:gap-6 mt-10"
           >
             {[
-              { value: '500+', label: 'Projects' },
-              { value: '2B+', label: 'Impressions' },
-              { value: '98%', label: 'Satisfaction' },
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0.8 }}
-                transition={{ duration: 0.5, delay: 0.9 + i * 0.1 }}
-                whileHover={{ scale: 1.05, y: -5 }}
-                className="text-center px-6 py-4 rounded-2xl backdrop-blur-md"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5))',
-                  border: '1px solid rgba(134, 102, 165, 0.15)',
-                  boxShadow: '0 4px 16px rgba(134, 102, 165, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
-                }}
-              >
-                <div 
-                  className="text-3xl md:text-4xl font-bold text-[#8666A5] mb-1"
-                  style={{ fontFamily: 'Playfair Display, serif' }}
+              { value: '500+', label: 'Projects', icon: Target, color: '#8666A5' },
+              { value: '2B+', label: 'Impressions', icon: Eye, color: '#9d7bb8' },
+              { value: '98%', label: 'Satisfaction', icon: Star, color: '#b39ddb' },
+            ].map((stat, i) => {
+              const IconComponent = stat.icon;
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.5, y: 20 }}
+                  animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0.5, y: isVisible ? 0 : 20 }}
+                  transition={{ 
+                    duration: 0.6, 
+                    delay: 1.1 + i * 0.1, 
+                    type: "spring",
+                    stiffness: 150
+                  }}
+                  whileHover={{ 
+                    scale: 1.05, 
+                    y: -5,
+                    transition: { duration: 0.3 }
+                  }}
+                  className="group relative text-center px-6 py-4 rounded-xl backdrop-blur-md overflow-hidden cursor-default min-w-[140px]"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.65))',
+                    border: '2px solid rgba(134, 102, 165, 0.2)',
+                    boxShadow: '0 6px 20px rgba(134, 102, 165, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+                  }}
                 >
-                  {stat.value}
-                </div>
-                <div className="text-sm text-[#6b4d7a] font-medium tracking-wide">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
+                  {/* Hover gradient overlay */}
+                  <motion.div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background: `linear-gradient(135deg, ${stat.color}15, ${stat.color}05)`
+                    }}
+                  />
+                  
+                  {/* Icon */}
+                  <motion.div
+                    className="relative z-10 flex items-center justify-center mb-2"
+                    whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div 
+                      className="w-10 h-10 rounded-full flex items-center justify-center"
+                      style={{
+                        background: `linear-gradient(135deg, ${stat.color}20, ${stat.color}10)`,
+                        boxShadow: `0 3px 10px ${stat.color}25`
+                      }}
+                    >
+                      <IconComponent 
+                        className="w-5 h-5"
+                        style={{ color: stat.color }}
+                        strokeWidth={2}
+                      />
+                    </div>
+                  </motion.div>
+
+                  {/* Value with counter animation */}
+                  <motion.div
+                    className="relative z-10 text-3xl md:text-4xl font-bold mb-1"
+                    style={{ 
+                      fontFamily: 'Playfair Display, serif',
+                      color: stat.color
+                    }}
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    {stat.value}
+                  </motion.div>
+
+                  {/* Label */}
+                  <motion.div 
+                    className="relative z-10 text-xs md:text-sm text-[#6b4d7a] font-semibold tracking-wide uppercase"
+                    style={{ letterSpacing: '0.08em' }}
+                  >
+                    {stat.label}
+                  </motion.div>
+
+                  {/* Decorative corner accent */}
+                  <div 
+                    className="absolute top-0 right-0 w-12 h-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      background: `radial-gradient(circle at top right, ${stat.color}12, transparent)`,
+                    }}
+                  />
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </motion.div>
@@ -387,6 +730,8 @@ const Portfolio = () => {
                 onClick={() => {
                   setActiveCaseStudy(item);
                   setCurrentImageIndex(0);
+                  console.log('Opening case study:', item.title);
+                  console.log('Gallery images:', item.gallery);
                 }}
               >
                 {/* Enhanced gradient overlay */}
@@ -522,7 +867,7 @@ const Portfolio = () => {
 
                 {index === 1 && (
                   <>
-                    {/* Card 2: Jewelry - Top Right Horizontal */}
+                    {/* Card 2: Jewellery - Top Right Horizontal */}
                     <motion.div
                       initial={{ opacity: 0, x: 30, y: -20 }}
                       animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : 30, y: isVisible ? 0 : -20 }}
@@ -535,7 +880,7 @@ const Portfolio = () => {
                         </p>
                         <div className="w-24 h-1 bg-white/80 ml-auto mb-2" />
                         <p className="text-white/90 text-lg font-bold tracking-[0.3em]" style={{ fontFamily: 'Didot, serif' }}>
-                          JEWELRY LINE
+                          JEWELLERY LINE
                         </p>
                       </div>
                     </motion.div>
@@ -680,11 +1025,17 @@ const Portfolio = () => {
 
                   {/* Image - Base layer */}
                   <div className="absolute inset-0 z-0">
-                    <ImageWithFallback
+                    <img
                       src={item.image}
                       alt={item.title}
                       className="w-full h-full object-cover rounded-3xl"
-                      eager={true}
+                      loading="eager"
+                      onError={(e) => {
+                        console.log('Cover image failed to load:', item.image);
+                      }}
+                      onLoad={() => {
+                        console.log('Cover image loaded:', item.image);
+                      }}
                     />
                   </div>
 
@@ -1121,11 +1472,35 @@ const Portfolio = () => {
                       className="w-full h-full flex items-center justify-center"
                     >
                       <div className="relative max-w-full max-h-full">
-                        <ImageWithFallback
+                        <img
                           src={activeCaseStudy.gallery[currentImageIndex]}
                           alt={`${activeCaseStudy.title} - Image ${currentImageIndex + 1}`}
                           className="max-w-full max-h-[400px] lg:max-h-[600px] object-contain rounded-xl shadow-2xl"
+                          onError={(e) => {
+                            console.log('Failed to load:', activeCaseStudy.gallery[currentImageIndex]);
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                          onLoad={(e) => {
+                            console.log('Successfully loaded:', activeCaseStudy.gallery[currentImageIndex]);
+                          }}
                         />
+                        <div 
+                          className="hidden items-center justify-center bg-gradient-to-br from-[#8666A5] to-[#9d7bb8] text-white p-8 rounded-xl"
+                          style={{ minHeight: '400px', minWidth: '300px' }}
+                        >
+                          <div className="text-center">
+                            <div className="w-16 h-16 mb-4 mx-auto rounded-full bg-white/20 flex items-center justify-center">
+                              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                              </svg>
+                            </div>
+                            <p className="text-lg font-semibold">Image Coming Soon</p>
+                            <p className="text-sm opacity-80 mt-2">{activeCaseStudy.title}</p>
+                          </div>
+                        </div>
                       </div>
                     </motion.div>
                   </AnimatePresence>
