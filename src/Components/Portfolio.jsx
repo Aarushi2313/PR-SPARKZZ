@@ -1283,7 +1283,7 @@ const Portfolio = () => {
           {/* Compact Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
             {[
-              { value: "500+", label: "Campaigns", icon: Target },
+              { value: "50+", label: "Campaigns", icon: Target },
               { value: "2B+", label: "Impressions", icon: Eye },
               { value: "98%", label: "Satisfaction", icon: Star },
               { value: "150+", label: "Celebrities", icon: Sparkles },
