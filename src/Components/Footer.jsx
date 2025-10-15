@@ -24,14 +24,17 @@ const Footer = () => {
           
           {/* Brand Section */}
           <div className="md:col-span-1">
-            <div className="flex items-center mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-lavender-500 to-lavender-700 rounded-lg flex items-center justify-center mr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                </svg>
+            <Link to="/" className="group cursor-pointer interactive flex items-center mb-4">
+              <div className="flex items-center justify-center transition-transform duration-300 group-hover:scale-105 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 mr-3">
+                <img 
+                  src="/logo.png" 
+                  alt="PR Sparkz Logo" 
+                  className="object-contain w-full h-full drop-shadow-sm"
+                />
               </div>
-              <h2 className="text-xl font-bold text-gray-900">PR SPARKZ</h2>
-            </div>
+
+              <h2 className="text-xl font-bold" style={{ color: '#8666A5' }}>PR SPARKZ</h2>
+            </Link>
             <p className="text-gray-600 text-sm mb-6 leading-relaxed">
               Transform your digital presence with creative solutions that connect and inspire.
             </p>
@@ -159,7 +162,9 @@ const Footer = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    className="w-full pl-10 pr-4 py-2 bg-white border border-lavender-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-lavender-500 focus:border-transparent text-sm"
+                    aria-label="Newsletter email"
+                    autoComplete="email"
+                    className="w-full pl-10 pr-4 py-2 bg-white border border-lavender-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-lavender-500 focus:border-transparent text-sm text-gray-800 placeholder-gray-400"
                   />
                 </div>
                 <button

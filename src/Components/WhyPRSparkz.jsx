@@ -415,10 +415,10 @@ const WhyPRSparkz = () => {
                     </button>
 
                     <div className="flex items-center text-gray-500 text-sm">
-                      <svg className="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      {/* <svg className="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      No commitment required • 30-minute session
+                      </svg> */}
+               
                     </div>
                   </div>
                 </div>

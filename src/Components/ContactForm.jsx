@@ -20,7 +20,6 @@ const ProjectLaunchpad = () => {
   const [formData, setFormData] = useState({
     projectType: "",
     timeline: "",
-    budget: "",
     name: "",
     email: "",
     description: ""
@@ -62,13 +61,6 @@ const ProjectLaunchpad = () => {
     { label: "Exploring Options", value: "flexible", icon: Sparkles }
   ];
 
-  const budgets = [
-    { label: "Enterprise Mission", range: "$10k+", icon: Sparkles },
-    { label: "Growth Orbit", range: "$5k - $10k", icon: Target },
-    { label: "Startup Launch", range: "$2k - $5k", icon: Rocket },
-    { label: "Discovery Phase", range: "To be discussed", icon: DollarSign }
-  ];
-
   const handleProjectSelect = (type) => {
     setFormData({...formData, projectType: type});
     setCurrentStep(2);
@@ -76,12 +68,8 @@ const ProjectLaunchpad = () => {
 
   const handleTimelineSelect = (timeline) => {
     setFormData({...formData, timeline});
+    // Move directly to details/launch step (now step 3)
     setCurrentStep(3);
-  };
-
-  const handleBudgetSelect = (budget) => {
-    setFormData({...formData, budget});
-    setCurrentStep(4);
   };
 
   const handleDetailsSubmit = (e) => {
@@ -99,7 +87,6 @@ const ProjectLaunchpad = () => {
     setFormData({
       projectType: "",
       timeline: "",
-      budget: "",
       name: "",
       email: "",
       description: ""
@@ -161,7 +148,7 @@ const ProjectLaunchpad = () => {
           transition={{ duration: 0.8, delay: 0.3 }}
         >
           <div className="flex justify-between items-center mb-8 md:mb-12 relative">
-            {[1, 2, 3, 4].map((step) => (
+            {[1, 2, 3].map((step) => (
               <div key={step} className="flex flex-col items-center relative z-10">
                 <motion.div
                   className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
@@ -182,7 +169,7 @@ const ProjectLaunchpad = () => {
                   }`}
                   style={currentStep >= step ? {color: "#64419a"} : {}}
                 >
-                  {["Mission", "Timeline", "Budget", "Launch"][step-1]}
+                  {["Mission", "Timeline", "Launch"][step-1]}
                 </span>
               </div>
             ))}
@@ -192,7 +179,8 @@ const ProjectLaunchpad = () => {
                 className="h-full"
                 style={{background: "linear-gradient(to right, #64419a, #553c8b)"}}
                 initial={{ width: "0%" }}
-                animate={{ width: `${((currentStep - 1) * 33.33)}%` }}
+                // there are now 3 steps, so each step is ~50% of the bar between step markers (use 50% per step progression)
+                animate={{ width: `${((currentStep - 1) * 50)}%` }}
                 transition={{ duration: 0.5 }}
               />
             </div>
@@ -284,56 +272,9 @@ const ProjectLaunchpad = () => {
               </motion.div>
             )}
 
-            {currentStep === 3 && !isLaunched && (
+            {currentStep === 3 && !isLaunched && !isLaunching && (
               <motion.div
-                key="step3"
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.4 }}
-                className="text-center"
-              >
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6 md:mb-8">
-                  Select Your Investment
-                </h2>
-                
-                <div className="grid gap-3 md:gap-4 max-w-2xl mx-auto">
-                  {budgets.map((budget, index) => {
-                    const IconComponent = budget.icon;
-                    return (
-                      <motion.button
-                        key={budget.range}
-                        onClick={() => handleBudgetSelect(budget.range)}
-                        className="p-4 rounded-xl bg-white border-2 border-purple-200 text-gray-800 text-left hover:bg-purple-50 hover:border-purple-400 transition-all duration-300 shadow-sm hover:shadow-md"
-                        whileHover={{ x: 10 }}
-                        whileTap={{ scale: 0.98 }}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 bg-purple-100 rounded-lg">
-                              <IconComponent size={20} style={{color: "#64419a"}} />
-                            </div>
-                            <span className="text-base md:text-lg font-medium">
-                              {budget.label}
-                            </span>
-                          </div>
-                          <span className="font-semibold" style={{color: "#64419a"}}>
-                            {budget.range}
-                          </span>
-                        </div>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-
-            {currentStep === 4 && !isLaunched && !isLaunching && (
-              <motion.div
-                key="step4"
+                key="step3-details"
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
@@ -406,6 +347,8 @@ const ProjectLaunchpad = () => {
                 </form>
               </motion.div>
             )}
+
+            {/* step 4 removed — details form is now step 3 */}
 
             {isLaunching && (
               <motion.div

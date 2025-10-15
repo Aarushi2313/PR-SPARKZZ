@@ -55,7 +55,7 @@ const AboutUs = () => {
     
     const animateCounters = () => {
       const duration = 2000;
-      const targets = { retention: 98, roi: 347, audience: 50, projects: 250 };
+      const targets = { retention: 98, roi: 347, audience: 50, projects: 50 };
       const steps = 60;
       const stepDuration = duration / steps;
       
@@ -690,10 +690,12 @@ const AboutUs = () => {
                                 repeatDelay: 0.5
                               }}
                             >
-                              <span>Explore</span>
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                              </svg>
+                              <Link to="/portfolio" className="flex items-center gap-2">
+                                <span>Explore</span>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                              </Link>
                             </motion.div>
                           </div>
 
@@ -742,7 +744,7 @@ const AboutUs = () => {
                   {[
                     { label: "Success Rate", value: "98%", icon: TrendingUp },
                     { label: "Avg ROI", value: "347%", icon: Target },
-                    { label: "Happy Clients", value: "250+", icon: Handshake }
+                    { label: "Happy Clients", value: "50+", icon: Handshake }
                   ].map((stat, index) => {
                     const StatIcon = stat.icon;
                     return (
