@@ -507,7 +507,7 @@ const Services = () => {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { value: "500+", label: "Projects" },
+              { value: "50+", label: "Projects" },
               { value: "98%", label: "Success" },
               { value: "95%", label: "Retention" },
               { value: "24/7", label: "Support" },

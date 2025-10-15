@@ -608,8 +608,8 @@ const Portfolio = () => {
             className="flex flex-wrap justify-center gap-4 md:gap-6 mt-10"
           >
             {[
-              { value: '500+', label: 'Projects', icon: Target, color: '#8666A5' },
-              { value: '2B+', label: 'Impressions', icon: Eye, color: '#9d7bb8' },
+              { value: '50+', label: 'Projects', icon: Target, color: '#8666A5' },
+              { value: '50M+', label: 'Impressions', icon: Eye, color: '#9d7bb8' },
               { value: '98%', label: 'Satisfaction', icon: Star, color: '#b39ddb' },
             ].map((stat, i) => {
               const IconComponent = stat.icon;
